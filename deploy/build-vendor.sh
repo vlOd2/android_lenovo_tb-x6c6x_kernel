@@ -35,17 +35,23 @@ echo "- VENDOR: Copying modules"
 pushd vendor_mount/lib/modules
 
 cat > modules.load <<END
-connadp.ko
+#connadp.ko
 wmt_drv.ko
 wmt_chrdev_wifi.ko
 wlan_drv_gen4m.ko
 END
 
+#cat > modules.dep <<END
+#connadp.ko:
+#wmt_drv.ko: connadp.ko
+#wmt_chrdev_wifi.ko: wmt_drv.ko connadp.ko
+#wlan_drv_gen4m.ko: wmt_chrdev_wifi.ko wmt_drv.ko connadp.ko
+#END
+
 cat > modules.dep <<END
-connadp.ko:
-wmt_drv.ko: connadp.ko
-wmt_chrdev_wifi.ko: wmt_drv.ko connadp.ko
-wlan_drv_gen4m.ko: wmt_chrdev_wifi.ko wmt_drv.ko connadp.ko
+wmt_drv.ko:
+wmt_chrdev_wifi.ko: wmt_drv.ko
+wlan_drv_gen4m.ko: wmt_chrdev_wifi.ko wmt_drv.ko
 END
 
 cat > modules.softdep <<END
@@ -55,7 +61,7 @@ END
 
 cp "$MODULES_DIR/modules.alias" .
 
-cp "$CONNECTIVITY_DIR/connadp.ko" .
+#cp "$CONNECTIVITY_DIR/connadp.ko" .
 cp "$CONNECTIVITY_DIR/wmt_drv/wmt_drv.ko" .
 cp "$CONNECTIVITY_DIR/wmt_chrdev_wifi/wmt_chrdev_wifi.ko" .
 cp "$CONNECTIVITY_DIR/wlan_drv_gen4m/wlan_drv_gen4m.ko" .
@@ -66,7 +72,7 @@ echo "- VENDOR: Patching init scripts"
 
 cat > vendor_mount/etc/init/init.wmt_drv.rc <<END
 on boot
-    insmod /vendor/lib/modules/connadp.ko
+    #insmod /vendor/lib/modules/connadp.ko
     insmod /vendor/lib/modules/wmt_drv.ko
 
 END

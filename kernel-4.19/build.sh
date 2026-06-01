@@ -57,8 +57,8 @@ echo "Build args: ${BUILD_ARGS[@]}"
 #echo "Cleaning kernel"
 #make "${BUILD_ARGS[@]}" clean
 
-#echo "Configuring kernel"
-#make "${BUILD_ARGS[@]}" CONFIG_WLAN_DRV_BUILD_IN=m P98928AA1_defconfig docker-extra.config
+echo "Configuring kernel"
+make "${BUILD_ARGS[@]}" CONFIG_WLAN_DRV_BUILD_IN=m P98928AA1_defconfig docker-extra.config
 #make "${BUILD_ARGS[@]}" P98928AA1_defconfig docker-extra.config
 #make "${BUILD_ARGS[@]}" menuconfig
 
