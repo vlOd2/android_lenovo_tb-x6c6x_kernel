@@ -1,0 +1,63 @@
+//
+// Copyright (C) 2020 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+apex_set {
+    name: "com.google.android.permission",
+    owner: "google",
+    overrides: [
+        "com.android.permission",
+        "PermissionController",
+    ],
+    set: "com.google.android.permission.apks",
+    required: ["GooglePermissionController_permissions.xml",],
+}
+
+prebuilt_etc {
+    name: "GooglePermissionController_permissions.xml",
+    src: "GooglePermissionController_permissions.xml",
+    sub_dir: "permissions",
+}
+
+override_apex {
+    name: "com.android.permission.gms",
+    base: "com.android.permission",
+    logging_parent: "com.google.android.modulemetadata",
+    apps: ["GooglePermissionController"],
+}
+
+java_sdk_library_import {
+    name: "framework-permission",
+    prefer: true,
+    shared_library: false,
+    apex_available: [
+        "com.android.permission",
+        "test_com.android.permission",
+    ],
+    public: {
+        jars: ["sdk_library/public/framework-permission.jar"],
+        current_api: "sdk_library/public/framework-permission.txt",
+        sdk_version: "module_current",
+    },
+    system: {
+        jars: ["sdk_library/system/framework-permission.jar"],
+        current_api: "sdk_library/system/framework-permission.txt",
+        sdk_version: "module_current",
+    },
+    module_lib: {
+        jars: ["sdk_library/module_lib/framework-permission.jar"],
+        current_api: "sdk_library/module_lib/framework-permission.txt",
+        sdk_version: "module_current",
+    },
+}
