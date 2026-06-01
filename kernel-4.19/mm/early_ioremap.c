@@ -102,7 +102,7 @@ static int __init check_early_ioremap_leak(void)
 }
 late_initcall(check_early_ioremap_leak);
 
-static void __init __iomem *
+void __init __iomem *
 __early_ioremap(resource_size_t phys_addr, unsigned long size, pgprot_t prot)
 {
 	unsigned long offset;

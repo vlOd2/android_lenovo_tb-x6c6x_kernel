@@ -1,2 +1,4 @@
-boot/
-*.img
+/deploy/boot/
+/deploy/vendor/
+/deploy/*.img
+/*.img

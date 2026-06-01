@@ -373,7 +373,8 @@ else
 endif
 
 ifeq ($(MODULE_NAME),)
-	MODULE_NAME := wlan_$(shell echo $(strip $(WLAN_CHIP_ID)) | tr A-Z a-z)_$(CONFIG_MTK_COMBO_WIFI_HIF)
+	MODULE_NAME := "wlan_drv_gen4m"
+	#MODULE_NAME := wlan_$(shell echo $(strip $(WLAN_CHIP_ID)) | tr A-Z a-z)_$(CONFIG_MTK_COMBO_WIFI_HIF)
 endif
 
 ccflags-y += -DDBG=0
