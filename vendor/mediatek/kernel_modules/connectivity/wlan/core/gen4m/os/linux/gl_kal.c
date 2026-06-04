@@ -180,7 +180,7 @@ static uint32_t kalPerMonUpdate(IN struct ADAPTER *prAdapter);
 #define  KGIDT_VALUE(v) v
 #endif
 
-static const struct firmware *fw_entry;
+const struct firmware *fw_entry;
 
 /* Default */
 static uint8_t *apucFwName[] = {

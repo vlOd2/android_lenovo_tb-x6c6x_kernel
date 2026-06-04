@@ -128,7 +128,7 @@ ifneq ($(KERNELRELEASE),)
         export MTK_ANDROID_WMT=y
         
         # Force all subdirectories to recognize the Module state
-        subdir-ccflags-y += -DCONFIG_WLAN_DRV_BUILD_IN=0
+        subdir-ccflags-y += -DCONFIG_WLAN_DRV_BUILD_IN=0 -DCONFIG_MTK_CONNECTIVITY_LOG=1
 
         # Force Module compilation
         obj-m += wmt_drv/
