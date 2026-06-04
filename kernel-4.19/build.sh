@@ -58,11 +58,11 @@ echo "Build args: ${BUILD_ARGS[@]}"
 #make "${BUILD_ARGS[@]}" clean
 
 echo "Configuring kernel"
-make "${BUILD_ARGS[@]}" CONFIG_WLAN_DRV_BUILD_IN=m P98928AA1_defconfig docker-extra.config
+make "${BUILD_ARGS[@]}" CONFIG_WLAN_DRV_BUILD_IN=m P98928AA1_defconfig serversetup.config
 
 echo "Building kernel"
 make "${BUILD_ARGS[@]}" CONFIG_WLAN_DRV_BUILD_IN=m -j12
 
-echo "Copying modules"
-mkdir -p out/modules
-make "${BUILD_ARGS[@]}" INSTALL_MOD_PATH=modules modules_install 
+#echo "Copying modules"
+#mkdir -p out/modules
+#make "${BUILD_ARGS[@]}" INSTALL_MOD_PATH=modules modules_install 

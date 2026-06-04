@@ -89,53 +89,6 @@ ifneq ($(KERNELRELEASE),)
         obj-y += wlan_drv_gen4m/
     endif
 
-    ifeq ($(CONFIG_WLAN_DRV_BUILD_IN),m)
-        PATH_TO_WMT_DRV      = vendor/mediatek/kernel_modules/connectivity/common
-        PATH_TO_WLAN_CHR_DRV = vendor/mediatek/kernel_modules/connectivity/wlan/adaptor
-        PATH_TO_WLAN_DRV     = vendor/mediatek/kernel_modules/connectivity/wlan/core/gen4m
-
-        ABS_PATH_TO_WMT_DRV      = $(abspath $(srctree)/../$(PATH_TO_WMT_DRV))
-        ABS_PATH_TO_WLAN_CHR_DRV = $(abspath $(srctree)/../$(PATH_TO_WLAN_CHR_DRV))
-        ABS_PATH_TO_WLAN_DRV     = $(abspath $(srctree)/../$(PATH_TO_WLAN_DRV))
-
-        # check wlan driver folder
-        ifeq (,$(wildcard $(ABS_PATH_TO_WMT_DRV)))
-            $(error $(ABS_PATH_TO_WMT_DRV) is not existed)
-        endif
-        ifeq (,$(wildcard $(ABS_PATH_TO_WLAN_CHR_DRV)))
-            $(error $(ABS_PATH_TO_WLAN_CHR_DRV) is not existed)
-        endif
-        ifeq (,$(wildcard $(ABS_PATH_TO_WLAN_DRV)))
-            $(error $(ABS_PATH_TO_WLAN_DRV) is not existed)
-        endif
-
-        $(warning symbolic link to $(PATH_TO_WMT_DRV))
-        $(warning symbolic link to $(PATH_TO_WLAN_CHR_DRV))
-        $(warning symbolic link to $(PATH_TO_WLAN_DRV))
-
-        $(shell unlink $(srctree)/$(src)/wmt_drv)
-        $(shell unlink $(srctree)/$(src)/wmt_chrdev_wifi)
-        $(shell unlink $(srctree)/$(src)/wlan_drv_gen4m)
-
-        $(shell ln -s $(ABS_PATH_TO_WMT_DRV)      $(srctree)/$(src)/wmt_drv)
-        $(shell ln -s $(ABS_PATH_TO_WLAN_CHR_DRV) $(srctree)/$(src)/wmt_chrdev_wifi)
-        $(shell ln -s $(ABS_PATH_TO_WLAN_DRV)     $(srctree)/$(src)/wlan_drv_gen4m)
-
-        # for gen4m options
-        export CONFIG_MTK_COMBO_WIFI_HIF=axi
-        export MTK_COMBO_CHIP=CONNAC
-        export WLAN_CHIP_ID=6765
-        export MTK_ANDROID_WMT=y
-        
-        # Force all subdirectories to recognize the Module state
-        subdir-ccflags-y += -DCONFIG_WLAN_DRV_BUILD_IN=0 -DCONFIG_MTK_CONNECTIVITY_LOG=1
-
-        # Force Module compilation
-        obj-m += wmt_drv/
-        obj-m += wmt_chrdev_wifi/
-        obj-m += wlan_drv_gen4m/
-    endif
-
 # Otherwise we were called directly from the command line;
 # invoke the kernel build system.
 else
