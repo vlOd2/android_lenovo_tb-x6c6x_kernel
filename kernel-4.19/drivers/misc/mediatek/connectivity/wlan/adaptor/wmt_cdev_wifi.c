@@ -264,6 +264,8 @@ EXPORT_SYMBOL(register_file_buf_handler);
 /*-----------------------------------------------------------------*/
 int32_t wifi_reset_start(void)
 {
+    return 0;
+
 	struct net_device *netdev = NULL;
 	struct PARAM_CUSTOM_P2P_SET_STRUCT p2pmode;
 

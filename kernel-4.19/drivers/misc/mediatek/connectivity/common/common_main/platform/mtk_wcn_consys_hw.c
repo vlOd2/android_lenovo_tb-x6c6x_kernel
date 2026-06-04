@@ -925,6 +925,8 @@ INT32 mtk_wcn_consys_hw_pwr_off(UINT32 co_clock_type)
 
 INT32 mtk_wcn_consys_hw_rst(UINT32 co_clock_type)
 {
+    return 0;
+
 	INT32 iRet = 0;
 
 	WMT_PLAT_PR_INFO("CONSYS-HW, hw_rst start, eirq should be disabled before this step\n");

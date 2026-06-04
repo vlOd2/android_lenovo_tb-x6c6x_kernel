@@ -30,7 +30,8 @@
 #define STP_BTM_LOG_WARN                 1
 #define STP_BTM_LOG_ERR                  0
 
-INT32 gBtmDbgLevel = STP_BTM_LOG_INFO;
+// INT32 gBtmDbgLevel = STP_BTM_LOG_INFO;
+INT32 gBtmDbgLevel = STP_BTM_LOG_DBG;
 
 #define STP_BTM_PR_LOUD(fmt, arg...) \
 do { \
@@ -122,7 +123,7 @@ static INT32 _stp_btm_handler(MTKSTP_BTM_T *stp_btm, P_STP_BTM_OP pStpOp)
 		}
 		STP_BTM_PR_INFO("....+\n");
 
-		wmt_lib_before_chip_reset_dump();
+		//wmt_lib_before_chip_reset_dump();
 
 		if (stp_btm->wmt_notify) {
 			stp_btm->wmt_notify(BTM_RST_OP);
