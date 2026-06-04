@@ -2,3 +2,4 @@
 /deploy/vendor/
 /deploy/*.img
 /*.img
+/tf/
