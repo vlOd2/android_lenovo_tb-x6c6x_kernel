@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-VENDOR_IMAGE="../vendor.img"
+VENDOR_IMAGE="base/vendor.img"
 MODULES_DIR="$PWD/../kernel-4.19/out/modules/lib/modules/4.19.127-docker"
 CONNECTIVITY_DIR="$MODULES_DIR/kernel/drivers/misc/mediatek/connectivity"
 

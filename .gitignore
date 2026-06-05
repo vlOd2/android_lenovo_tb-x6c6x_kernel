@@ -1,5 +1,7 @@
 /deploy/boot/
 /deploy/vendor/
-/deploy/*.img
-/*.img
-/tf/
+/deploy/base/
+/deploy/out/
+/custom-ramdisk/
+/akb_toolchain/
+/akb_build/

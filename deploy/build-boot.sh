@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-BOOT_IMAGE="../boot.img"
+BOOT_IMAGE="base/boot.img"
 KERNEL_IMAGE="$PWD/../kernel-4.19/out/arch/arm64/boot/Image"
 
 EXTRA_BOOT_OPTS=(
