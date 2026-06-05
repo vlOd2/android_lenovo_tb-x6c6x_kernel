@@ -19,14 +19,14 @@ function pre_action {
 case "${1:-}" in
     config)
         pre_action
-        build::run "P98928AA1_defconfig serversetup.config"
+        build::run "P98928AA1_defconfig" "serversetup.config"
         ;;
 
     build)
         pre_action
         build::run "-j$(nproc)"
         mkdir -p "$AKB_BUILD_DIR/modules"
-        build::run "INSTALL_MOD_PATH=modules modules_install -j$(nproc)"
+        build::run "INSTALL_MOD_PATH=modules" "modules_install" "-j$(nproc)"
         ;;
 
     clean)

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 VENDOR_IMAGE="base/vendor.img"
-MODULES_DIR="$PWD/../kernel-4.19/out/modules/lib/modules/4.19.127-docker"
+MODULES_DIR="$PWD/../akb_build/modules/lib/modules/4.19.127-docker"
 CONNECTIVITY_DIR="$MODULES_DIR/kernel/drivers/misc/mediatek/connectivity"
 
 echo "error: this script is not needed anymore and is kept around just in case" 

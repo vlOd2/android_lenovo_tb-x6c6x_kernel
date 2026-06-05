@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BOOT_IMAGE="base/boot.img"
-KERNEL_IMAGE="$PWD/../kernel-4.19/out/arch/arm64/boot/Image"
+KERNEL_IMAGE="$PWD/../akb_build/arch/arm64/boot/Image"
 
 EXTRA_BOOT_OPTS=(
 	"log_buf_len=4M"
