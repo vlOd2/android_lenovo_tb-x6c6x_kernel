@@ -15,7 +15,7 @@ function build::clean {
 
     case "$delete_prompt" in
         [yY])
-            build::run "clean"
+            build::run "mrproper"
             set -x
             rm -rf "$AKB_BUILD_DIR"
             set +x
