@@ -66,4 +66,6 @@ function build::run {
     else
         log "MAKE FAILED ($exit_code) IN ${exec_time}s" "error"
     fi
+
+    return $exit_code
 }

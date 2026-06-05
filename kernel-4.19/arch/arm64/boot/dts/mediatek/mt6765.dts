@@ -31,7 +31,17 @@ swiotlb=noforce androidboot.hardware=mt6765 \
 maxcpus=8 loop.max_part=7 \
 firmware_class.path=/vendor/firmware";
 		kaslr-seed = <0 0>;
+        stdout-path = "display0";
 	};
+
+    display0: framebuffer@7dce0000 {
+        compatible = "simple-framebuffer";
+        reg = <0x0 0x7dce0000 0x0 0x008e8000>;
+        width = <1200>;
+        height = <1920>;
+        stride = <4864>;
+        format = "a8r8g8b8";
+    };
 
 	regulator_vibrator {
 		compatible = "regulator-vibrator";
