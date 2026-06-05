@@ -49,8 +49,8 @@ function tc::download {
 function tc::version {
     local clang_bin="$AKB_TOOLCHAIN_DIR/clang/bin/clang"
     local gcc_bin="$AKB_TOOLCHAIN_DIR/gcc/bin/aarch64-linux-android-gcc"
-    local clang_version=$("$clang_bin" --version | grep -Po '(?<=clang version )(\d+?\.\d+?.\d+)' | head -n1)
-    local gcc_version=$("$gcc_bin" --version | grep -Po '(\d+?\.\d+?.\d+)' | head -n1)
+    local clang_version=$("$clang_bin" --version | grep -Po '(?<=clang version )(\w+?\.\w+?\.\w+)' | head -n1)
+    local gcc_version=$("$gcc_bin" --version | grep -Po '(\w+?\.\w+?\.\w+)' | head -n1)
     log "Using clang version: $clang_version"
     log "Using gcc version: $gcc_version"
 }
