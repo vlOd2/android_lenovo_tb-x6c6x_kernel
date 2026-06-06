@@ -26,7 +26,7 @@ function _mkb::check {
         exit 1
     fi
 
-    tc::version
+    tc::check
 }
 
 function mkb::clean {

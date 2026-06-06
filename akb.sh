@@ -9,15 +9,12 @@ source "$__SRC_DIR/akb_lib/common.sh"
 source "$__SRC_DIR/akb_lib/toolchain.sh"
 source "$__SRC_DIR/akb_lib/makebuild.sh"
 
-common::init
+akb::init
 
 function pre_action {
+    tc::check
     tc::download
-    # this section uses regex positive lookbehinds, which may not be supported everywhere
-    # so an option is given to allow people to bypass it
-    if [[ -z "${AKB_NO_VERSION_PRINT:-}" ]]; then
-        tc::version
-    fi
+    tc::version
 }
 
 case "${1:-}" in

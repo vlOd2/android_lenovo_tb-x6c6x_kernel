@@ -26,7 +26,7 @@ function _tc::download_clang {
     rm -rf "_clang"
 }
 
-function _tc::check {
+function tc::check {
     if [[ -z "${AKB_TOOLCHAIN_DIR:-}" ]]; then
         log "AKB_TOOLCHAIN_DIR is not a valid path" "error"
         exit 1
@@ -39,7 +39,7 @@ function _tc::check {
 }
 
 function tc::download {
-    _tc::check
+    tc::check
 
     if [[ -d "$AKB_TOOLCHAIN_DIR" && -d "$AKB_TOOLCHAIN_DIR/clang" && -d "$AKB_TOOLCHAIN_DIR/gcc" ]]; then
         return 0
@@ -56,7 +56,7 @@ function tc::download {
 }
 
 function tc::version {
-    _tc::check
+    tc::check
     local clang_bin="$AKB_TOOLCHAIN_DIR/clang/bin/clang"
     local gcc_bin="$AKB_TOOLCHAIN_DIR/gcc/bin/aarch64-linux-android-gcc"
     local clang_version=$("$clang_bin" --version | grep -Po '(?<=clang version )(\w+?\.\w+?\.\w+)' | head -n1)
@@ -66,7 +66,7 @@ function tc::version {
 }
 
 function tc::use {
-    _tc::check
+    tc::check
     export PATH="$AKB_TOOLCHAIN_DIR/clang/bin:${PATH}"
     export PATH="$AKB_TOOLCHAIN_DIR/gcc/bin:${PATH}"
 }
