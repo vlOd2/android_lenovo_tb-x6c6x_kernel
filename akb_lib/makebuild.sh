@@ -57,7 +57,10 @@ function mkb::clean {
 
     case "$delete_prompt" in
         [yY])
-            mkb::run "mrproper"
+            if [[ "$(type -t mkb::extra_clean)" == "function" ]]; then
+                log "Executing extra clean"
+                mkb::extra_clean
+            fi
             set -x
             rm -rf "$AKB_MKB_BUILD_DIR"
             set +x

@@ -19,6 +19,10 @@ function pre_action {
     ktc::version
 }
 
+function mkb::extra_clean {
+    mkb::run "mrproper"
+}
+
 case "${1:-}" in
     config)
         pre_action
