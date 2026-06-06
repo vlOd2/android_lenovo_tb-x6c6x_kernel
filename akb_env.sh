@@ -6,15 +6,15 @@ AKB_ROOT_DIR="$(dirname $BASH_SOURCE)"
 if [[ ! -d "$AKB_ROOT_DIR" ]]; then AKB_ROOT_DIR="$PWD"; fi
 AKB_ROOT_DIR="$(realpath $AKB_ROOT_DIR)"
 
-AKB_SOURCE_DIR="$AKB_ROOT_DIR/kernel-4.19"
-AKB_BUILD_DIR="$AKB_ROOT_DIR/akb_build"
 AKB_TOOLCHAIN_DIR="$AKB_ROOT_DIR/akb_toolchain"
 
-AKB_BUILD_ARGS=(
+AKB_MKB_SOURCE_DIR="$AKB_ROOT_DIR/kernel-4.19"
+AKB_MKB_BUILD_DIR="$AKB_ROOT_DIR/akb_build"
+AKB_MKB_BUILD_ARGS=(
     "ARCH=arm64"
     "CROSS_COMPILE=aarch64-linux-android-"
     "CLANG_TRIPLE=aarch64-linux-gnu-"
-    "O=$AKB_BUILD_DIR"
+    "O=$AKB_MKB_BUILD_DIR"
 
     "CC=clang"
     "NM=llvm-nm"

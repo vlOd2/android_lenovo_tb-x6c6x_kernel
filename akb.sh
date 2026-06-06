@@ -7,7 +7,7 @@ if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
 source "$__SRC_DIR/akb_env.sh"
 source "$__SRC_DIR/akb_lib/common.sh"
 source "$__SRC_DIR/akb_lib/toolchain.sh"
-source "$__SRC_DIR/akb_lib/build.sh"
+source "$__SRC_DIR/akb_lib/makebuild.sh"
 
 common::init
 
@@ -23,19 +23,19 @@ function pre_action {
 case "${1:-}" in
     config)
         pre_action
-        build::run "P98928AA1_defconfig" "serversetup.config"
+        mkb::run "P98928AA1_defconfig" "serversetup.config"
         ;;
 
     build)
         pre_action
-        build::run "-j$(nproc)"
-        mkdir -p "$AKB_BUILD_DIR/modules"
-        build::run "INSTALL_MOD_PATH=modules" "modules_install" "-j$(nproc)"
+        mkb::run "-j$(nproc)"
+        mkdir -p "$AKB_MKB_BUILD_DIR/modules"
+        mkb::run "INSTALL_MOD_PATH=modules" "modules_install" "-j$(nproc)"
         ;;
 
     clean)
         pre_action
-        build::clean
+        mkb::clean
         ;;
 
     tc)
@@ -54,7 +54,7 @@ case "${1:-}" in
             exit 1
         fi
         
-        build::run "${args[@]}"
+        mkb::run "${args[@]}"
         ;;
 
     *)

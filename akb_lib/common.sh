@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+__AKB_BUILDER=1
+
 function log {
     local e=$'\x1B'
     local l=""
@@ -32,21 +34,6 @@ function common::init {
 
     if [[ -z "${AKB_ROOT_DIR:-}" || ! -d "$AKB_ROOT_DIR" ]]; then
         log "AKB_ROOT_DIR is not a valid directory" "error"
-        invalid_config=1
-    fi
-
-    if [[ -z "${AKB_SOURCE_DIR:-}" || ! -d "$AKB_SOURCE_DIR" ]]; then
-        log "AKB_SOURCE_DIR is not a valid directory" "error"
-        invalid_config=1
-    fi
-
-    if [[ -z "${AKB_BUILD_DIR:-}" ]]; then
-        log "AKB_BUILD_DIR is not a valid path" "error"
-        invalid_config=1
-    fi
-
-    if [[ -z "${AKB_BUILD_ARGS:-}" ]]; then
-        log "AKB_BUILD_ARGS is not set" "error"
         invalid_config=1
     fi
 
