@@ -2,14 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-AKB_ROOT_DIR="$(dirname $BASH_SOURCE)"
-if [[ ! -d "$AKB_ROOT_DIR" ]]; then AKB_ROOT_DIR="$PWD"; fi
-AKB_ROOT_DIR="$(realpath $AKB_ROOT_DIR/..)"
-
-AKB_KERNEL_DIR="$AKB_ROOT_DIR/kernel-4.19"
-AKB_BUILD_DIR="$AKB_ROOT_DIR/akb_build"
-AKB_TOOLCHAIN_DIR="$AKB_ROOT_DIR/akb_toolchain"
-
 function log {
     local e=$'\x1B'
     local l=""
@@ -36,15 +28,30 @@ function log {
 }
 
 function common::init {
-    if [[ ! -d "$AKB_ROOT_DIR" ]]; then
+    local invalid_config=0
+
+    if [[ -z "${AKB_ROOT_DIR:-}" || ! -d "$AKB_ROOT_DIR" ]]; then
         log "AKB_ROOT_DIR is not a valid directory" "error"
-        log "AKB root directory is invalid" "error"
-        exit 1
+        invalid_config=1
     fi
 
-    if [[ ! -d "$AKB_KERNEL_DIR" ]]; then
-        log "AKB_KERNEL_DIR is not a valid directory" "error"
-        log "AKB root directory is invalid" "error"
+    if [[ -z "${AKB_SOURCE_DIR:-}" || ! -d "$AKB_SOURCE_DIR" ]]; then
+        log "AKB_SOURCE_DIR is not a valid directory" "error"
+        invalid_config=1
+    fi
+
+    if [[ -z "${AKB_BUILD_DIR:-}" ]]; then
+        log "AKB_BUILD_DIR is not a valid path" "error"
+        invalid_config=1
+    fi
+
+    if [[ -z "${AKB_BUILD_ARGS:-}" ]]; then
+        log "AKB_BUILD_ARGS is not set" "error"
+        invalid_config=1
+    fi
+
+    if [[ $invalid_config -eq 1 ]]; then
+        log "AKB configuration is invalid" "error"
         exit 1
     fi
 }

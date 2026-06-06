@@ -1,6 +1,10 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
 __SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
+source "$__SRC_DIR/akb_env.sh"
 source "$__SRC_DIR/akb_lib/common.sh"
 source "$__SRC_DIR/akb_lib/toolchain.sh"
 source "$__SRC_DIR/akb_lib/build.sh"

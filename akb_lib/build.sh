@@ -2,7 +2,6 @@
 __BD_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__BD_SRC_DIR" ]]; then __BD_SRC_DIR="$PWD"; fi
 source "$__BD_SRC_DIR/common.sh"
-source "$__BD_SRC_DIR/toolchain.sh"
 
 function build::clean {
     if [[ ! -d "$AKB_BUILD_DIR" ]]; then
@@ -28,33 +27,19 @@ function build::clean {
 }
 
 function build::run {
-    local build_args=(
-        "ARCH=arm64"
-        "CROSS_COMPILE=aarch64-linux-android-"
-        "CLANG_TRIPLE=aarch64-linux-gnu-"
-        "O=$AKB_BUILD_DIR"
-
-        "CC=clang"
-        "NM=llvm-nm"
-        "OBJCOPY=llvm-objcopy"
-        
-        "LD=ld.lld"
-        "LD_LIBRARY_PATH=$AKB_TOOLCHAIN_DIR/clang/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    )
-
     mkdir -p "$AKB_BUILD_DIR"
     tc::use
 
-    local build_args_dump=$(printf '%s ' "${build_args[@]}")
+    local build_args_dump=$(printf '%s ' "${AKB_BUILD_ARGS[@]}")
     local make_action_dump=$(printf '%s ' "$@") 
     log "Make options: $build_args_dump"
     log "Running make $make_action_dump"
 
     local start_time=$EPOCHSECONDS
-    pushd "$AKB_KERNEL_DIR" &>/dev/null
+    pushd "$AKB_SOURCE_DIR" &>/dev/null
 
     set +e
-    make "${build_args[@]}" "$@"
+    make "${AKB_BUILD_ARGS[@]}" "$@"
     local exit_code=$?
     set -e
 
