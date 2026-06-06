@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# make support for AKB
+# Required variables: AKB_MKB_SOURCE_DIR, AKB_MKB_BUILD_DIR, AKB_MKB_BUILD_ARGS
+# Requires common toolchain (tc::check and tc::use)
+
 __BD_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__BD_SRC_DIR" ]]; then __BD_SRC_DIR="$PWD"; fi
 source "$__BD_SRC_DIR/common.sh"
@@ -18,6 +23,16 @@ function _mkb::check {
 
     if [[ -z "${AKB_MKB_BUILD_ARGS:-}" ]]; then
         log "AKB_MKB_BUILD_ARGS is not set" "error"
+        invalid_config=1
+    fi
+
+    if [[ "$(type -t tc::check)" != "function" ]]; then
+        log "tc::check is not defined (did you forget the toolchain?)" "error"
+        invalid_config=1
+    fi
+
+    if [[ "$(type -t tc::use)" != "function" ]]; then
+        log "tc::use is not defined (did you forget the toolchain?)" "error"
         invalid_config=1
     fi
 

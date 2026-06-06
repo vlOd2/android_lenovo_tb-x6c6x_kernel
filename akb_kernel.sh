@@ -2,19 +2,21 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Android kernel specific AKB root builder
+
 __SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
-source "$__SRC_DIR/akb_env.sh"
+source "$__SRC_DIR/akb_kernel_env.sh"
 source "$__SRC_DIR/akb_lib/common.sh"
-source "$__SRC_DIR/akb_lib/toolchain.sh"
+source "$__SRC_DIR/akb_kernel_tc.sh"
 source "$__SRC_DIR/akb_lib/makebuild.sh"
 
 akb::init
 
 function pre_action {
     tc::check
-    tc::download
-    tc::version
+    ktc::download
+    ktc::version
 }
 
 case "${1:-}" in

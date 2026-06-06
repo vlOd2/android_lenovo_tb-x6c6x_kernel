@@ -1,16 +1,19 @@
 #!/bin/bash
+
+# Kernel specific AKB toolchain implementation
+
 __TC_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__TC_SRC_DIR" ]]; then __TC_SRC_DIR="$PWD"; fi
-source "$__TC_SRC_DIR/common.sh"
+source "$__TC_SRC_DIR/akb_lib/common.sh"
 
-function _tc::download_gcc {
+function _ktc::download_gcc {
     local GCC_TC_BRANCH="pie-gsi"
     local GCC_TC_URL="https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9"
     log "Downloading gcc ($GCC_TC_BRANCH)"
     git clone --depth 1 -b "$GCC_TC_BRANCH" "$GCC_TC_URL" "gcc"
 }
 
-function _tc::download_clang {
+function _ktc::download_clang {
     local CLANG_TC_BRANCH="android11-gsi"
     local CLANG_TC_REV="clang-r383902"
     local CLANG_TC_URL="https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86"
@@ -26,9 +29,10 @@ function _tc::download_clang {
     rm -rf "_clang"
 }
 
+# Common toolchain function
 function tc::check {
-    if [[ -z "${AKB_TOOLCHAIN_DIR:-}" ]]; then
-        log "AKB_TOOLCHAIN_DIR is not a valid path" "error"
+    if [[ -z "${AKB_KERNEL_TC_DIR:-}" ]]; then
+        log "AKB_KERNEL_TC_DIR is not a valid path" "error"
         exit 1
     fi
 
@@ -38,35 +42,36 @@ function tc::check {
     fi
 }
 
-function tc::download {
+function ktc::download {
     tc::check
 
-    if [[ -d "$AKB_TOOLCHAIN_DIR" && -d "$AKB_TOOLCHAIN_DIR/clang" && -d "$AKB_TOOLCHAIN_DIR/gcc" ]]; then
+    if [[ -d "$AKB_KERNEL_TC_DIR" && -d "$AKB_KERNEL_TC_DIR/clang" && -d "$AKB_KERNEL_TC_DIR/gcc" ]]; then
         return 0
     fi
     log "Downloading toolchain"
 
-    mkdir -p "$AKB_TOOLCHAIN_DIR"
-    pushd "$AKB_TOOLCHAIN_DIR" &>/dev/null
+    mkdir -p "$AKB_KERNEL_TC_DIR"
+    pushd "$AKB_KERNEL_TC_DIR" &>/dev/null
 
-    _tc::download_gcc
-    _tc::download_clang
+    _ktc::download_gcc
+    _ktc::download_clang
 
     popd &>/dev/null
 }
 
-function tc::version {
+function ktc::version {
     tc::check
-    local clang_bin="$AKB_TOOLCHAIN_DIR/clang/bin/clang"
-    local gcc_bin="$AKB_TOOLCHAIN_DIR/gcc/bin/aarch64-linux-android-gcc"
+    local clang_bin="$AKB_KERNEL_TC_DIR/clang/bin/clang"
+    local gcc_bin="$AKB_KERNEL_TC_DIR/gcc/bin/aarch64-linux-android-gcc"
     local clang_version=$("$clang_bin" --version | grep -Po '(?<=clang version )(\w+?\.\w+?\.\w+)' | head -n1)
     local gcc_version=$("$gcc_bin" --version | grep -Po '(\w+?\.\w+?\.\w+)' | head -n1)
     log "Using clang version: $clang_version"
     log "Using gcc version: $gcc_version"
 }
 
+# Common toolchain function
 function tc::use {
     tc::check
-    export PATH="$AKB_TOOLCHAIN_DIR/clang/bin:${PATH}"
-    export PATH="$AKB_TOOLCHAIN_DIR/gcc/bin:${PATH}"
+    export PATH="$AKB_KERNEL_TC_DIR/clang/bin:${PATH}"
+    export PATH="$AKB_KERNEL_TC_DIR/gcc/bin:${PATH}"
 }

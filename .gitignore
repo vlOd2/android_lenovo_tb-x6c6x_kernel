@@ -3,5 +3,5 @@
 /deploy/base/
 /deploy/out/
 /custom-ramdisk/
-/akb_toolchain/
-/akb_build/
+/kernel_tc/
+/kernel_build/
