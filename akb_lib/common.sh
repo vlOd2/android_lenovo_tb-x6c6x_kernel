@@ -83,7 +83,7 @@ function akb::invoke_builder() {
     log "Invoking AKB builder: $builder_path"
     local builder_dir="${builder_path%/*}"
 
-    pushd "$builder_dir"
+    pushd "$builder_dir" >/dev/null
     (
         __AKB_BUILDER=1
         source $builder_path
@@ -93,7 +93,7 @@ function akb::invoke_builder() {
         fi
         _sb_main
     )
-    popd
+    popd >/dev/null
 }
 
 function akb::find_root_dir {

@@ -67,9 +67,10 @@ function mkb::clean {
                 log "Executing extra clean"
                 mkb::extra_clean
             fi
-            set -x
-            rm -rf "$AKB_MKB_BUILD_DIR"
-            set +x
+            (
+                set -x
+                rm -rf "$AKB_MKB_BUILD_DIR"
+            )
             ;;
 
         *)
