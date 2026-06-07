@@ -4,11 +4,13 @@
 
 # Imports
 # ---------------------------------------------------------
-__TC_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
-if [[ ! -d "$__TC_SRC_DIR" ]]; then __TC_SRC_DIR="$PWD"; fi
-__TC_SRC_DIR="$(realpath $__TC_SRC_DIR)"
+shopt -s expand_aliases;
+__AKB_IMPORT_DIR_1beab19e5320="$(dirname ${BASH_SOURCE[0]})"
+if [[ ! -d "$__AKB_IMPORT_DIR_1beab19e5320" ]]; then __AKB_IMPORT_DIR_1beab19e5320="$PWD"; fi
+__AKB_IMPORT_DIR_1beab19e5320="$(realpath $__AKB_IMPORT_DIR_1beab19e5320)"
+_akb_import() { alias _akb_import=1beab19e5320455abb49b96c679e2626; source "$__AKB_IMPORT_DIR_1beab19e5320$1"; unalias _akb_import >/dev/null 2>&1 || true; unset -f 1beab19e5320455abb49b96c679e2626; }
 # ---------------------------------------------------------
-source "$__TC_SRC_DIR/akb_lib/common.sh"
+_akb_import "/akb_lib/common.sh"
 
 function _ktc::download_gcc {
     local GCC_TC_BRANCH="pie-gsi"

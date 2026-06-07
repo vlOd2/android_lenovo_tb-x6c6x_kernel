@@ -6,11 +6,13 @@
 
 # Imports
 # ---------------------------------------------------------
-__BD_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
-if [[ ! -d "$__BD_SRC_DIR" ]]; then __BD_SRC_DIR="$PWD"; fi
-__BD_SRC_DIR="$(realpath $__BD_SRC_DIR)"
+shopt -s expand_aliases;
+__AKB_IMPORT_DIR_f22a068cf66b="$(dirname ${BASH_SOURCE[0]})"
+if [[ ! -d "$__AKB_IMPORT_DIR_f22a068cf66b" ]]; then __AKB_IMPORT_DIR_f22a068cf66b="$PWD"; fi
+__AKB_IMPORT_DIR_f22a068cf66b="$(realpath $__AKB_IMPORT_DIR_f22a068cf66b)"
+_akb_import() { alias _akb_import=f22a068cf66b4208b7a26034ba947806; source "$__AKB_IMPORT_DIR_f22a068cf66b$1"; unalias _akb_import >/dev/null 2>&1 || true; unset -f f22a068cf66b4208b7a26034ba947806; }
 # ---------------------------------------------------------
-source "$__BD_SRC_DIR/common.sh"
+_akb_import "/common.sh"
 
 function _mkb::check {
     local invalid_config=0

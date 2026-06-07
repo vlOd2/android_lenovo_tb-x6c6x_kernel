@@ -6,14 +6,16 @@ IFS=$'\n\t'
 
 # Imports
 # ---------------------------------------------------------
-__SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
-if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
-__SRC_DIR="$(realpath $__SRC_DIR)"
+shopt -s expand_aliases;
+__AKB_IMPORT_DIR_d036f081c960="$(dirname ${BASH_SOURCE[0]})"
+if [[ ! -d "$__AKB_IMPORT_DIR_d036f081c960" ]]; then __AKB_IMPORT_DIR_d036f081c960="$PWD"; fi
+__AKB_IMPORT_DIR_d036f081c960="$(realpath $__AKB_IMPORT_DIR_d036f081c960)"
+_akb_import() { alias _akb_import=d036f081c960434aaa7c1268de2b43b2; source "$__AKB_IMPORT_DIR_d036f081c960$1"; unalias _akb_import >/dev/null 2>&1 || true; unset -f d036f081c960434aaa7c1268de2b43b2; }
 # ---------------------------------------------------------
-source "$__SRC_DIR/akb_lib/common.sh"
-source "$__SRC_DIR/akb_kernel_env.sh"
-source "$__SRC_DIR/akb_kernel_tc.sh"
-source "$__SRC_DIR/akb_lib/makebuild.sh"
+_akb_import "/akb_lib/common.sh"
+_akb_import "/akb_kernel_env.sh"
+_akb_import "/akb_kernel_tc.sh"
+_akb_import "/akb_lib/makebuild.sh"
 
 akb::init
 
