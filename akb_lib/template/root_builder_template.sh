@@ -2,13 +2,16 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-AKB_ROOT_DIR="$(dirname $BASH_SOURCE)"
-if [[ ! -d "$AKB_ROOT_DIR" ]]; then AKB_ROOT_DIR="$PWD"; fi
-AKB_ROOT_DIR="$(realpath $AKB_ROOT_DIR)"
-
+# Imports
+# ---------------------------------------------------------
 __SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
+__SRC_DIR="$(realpath $__SRC_DIR)"
+# ---------------------------------------------------------
 source "$__SRC_DIR/akb_lib/common.sh"
+
+# Environment
+AKB_ROOT_DIR="$(akb::find_root_dir "${BASH_SOURCE[0]}")"
 
 akb::init
 

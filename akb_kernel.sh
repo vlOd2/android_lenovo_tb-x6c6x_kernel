@@ -4,10 +4,14 @@ IFS=$'\n\t'
 
 # Android kernel specific AKB root builder
 
+# Imports
+# ---------------------------------------------------------
 __SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__SRC_DIR" ]]; then __SRC_DIR="$PWD"; fi
-source "$__SRC_DIR/akb_kernel_env.sh"
+__SRC_DIR="$(realpath $__SRC_DIR)"
+# ---------------------------------------------------------
 source "$__SRC_DIR/akb_lib/common.sh"
+source "$__SRC_DIR/akb_kernel_env.sh"
 source "$__SRC_DIR/akb_kernel_tc.sh"
 source "$__SRC_DIR/akb_lib/makebuild.sh"
 

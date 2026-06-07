@@ -2,8 +2,12 @@
 
 # Kernel specific AKB toolchain implementation
 
+# Imports
+# ---------------------------------------------------------
 __TC_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__TC_SRC_DIR" ]]; then __TC_SRC_DIR="$PWD"; fi
+__TC_SRC_DIR="$(realpath $__TC_SRC_DIR)"
+# ---------------------------------------------------------
 source "$__TC_SRC_DIR/akb_lib/common.sh"
 
 function _ktc::download_gcc {

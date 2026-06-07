@@ -4,8 +4,12 @@
 # Required variables: AKB_MKB_SOURCE_DIR, AKB_MKB_BUILD_DIR, AKB_MKB_BUILD_ARGS
 # Requires common toolchain (tc::check and tc::use)
 
+# Imports
+# ---------------------------------------------------------
 __BD_SRC_DIR="$(dirname ${BASH_SOURCE[0]})"
 if [[ ! -d "$__BD_SRC_DIR" ]]; then __BD_SRC_DIR="$PWD"; fi
+__BD_SRC_DIR="$(realpath $__BD_SRC_DIR)"
+# ---------------------------------------------------------
 source "$__BD_SRC_DIR/common.sh"
 
 function _mkb::check {

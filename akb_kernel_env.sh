@@ -4,9 +4,7 @@ IFS=$'\n\t'
 
 # Kernel specific AKB environment
 
-AKB_ROOT_DIR="$(dirname $BASH_SOURCE)"
-if [[ ! -d "$AKB_ROOT_DIR" ]]; then AKB_ROOT_DIR="$PWD"; fi
-AKB_ROOT_DIR="$(realpath $AKB_ROOT_DIR)"
+AKB_ROOT_DIR="$(akb::find_root_dir "${BASH_SOURCE[0]}")"
 
 AKB_KERNEL_TC_DIR="$AKB_ROOT_DIR/kernel_tc"
 
