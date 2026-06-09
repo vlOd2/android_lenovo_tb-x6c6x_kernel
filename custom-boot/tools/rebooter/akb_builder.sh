@@ -8,8 +8,32 @@ if [[ -z "${__AKB_BUILDER:-}" ]]; then
 fi
 
 function _sb_main {
-    if [[ "${RB_REBOOTER:-0}" -ne "1" && -e "$AKB_CB_OUT_BOOFS_DIR/bin/rebooter" ]]; then
-        log "Rebooter is already built, export RB_REBOOTER=1 to rebuild" "warn"
+    if [[ $# -gt 0 ]]; then
+        case "$1" in
+            clean)
+                if [[ ! -e "$AKB_CB_OUT_BOOFS_DIR/bin/rebooter" ]]; then
+                    log "Rebooter cannot be cleaned: not built or bootfs not initialised" "warn"
+                    return 0
+                fi
+                (
+                    set -x
+                    rm "$AKB_CB_OUT_BOOFS_DIR/bin/rebooter"
+                )
+                return 0
+                ;;
+            
+            build)
+                ;;
+
+            *)
+                echo "USAGE: tools_rb {build/<none>|clean}"
+                return 1
+                ;;
+        esac
+    fi
+
+    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/bin/rebooter" ]]; then
+        log "Rebooter is already built, pass build explicitly to continue" "warn"
         return 0
     fi
     

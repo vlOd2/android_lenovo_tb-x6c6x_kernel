@@ -20,6 +20,10 @@ function download_src {
     rm bbsrc.tar.bz2
 }
 
+function mkb::extra_clean {
+    mkb::run "mrproper"
+}
+
 function _sb_main {
     AKB_MKB_SOURCE_DIR="$(realpath bbsrc)"
     AKB_MKB_BUILD_DIR="$AKB_MKB_SOURCE_DIR/out"
@@ -27,12 +31,35 @@ function _sb_main {
         "O=$AKB_MKB_BUILD_DIR"
     )
 
-    if [[ "${RB_BUSYBOX:-0}" -ne "1" && -e "$AKB_CB_OUT_BOOFS_DIR/bin/busybox" ]]; then
-        log "Busybox is already built, export RB_BUSYBOX=1 to rebuild" "warn"
+    _akb_import "/../akb_lib/makebuild.sh"
+
+    if [[ $# -gt 0 ]]; then
+        case "$1" in
+            clean)
+                if [[ ! -d "$AKB_MKB_SOURCE_DIR" || ! -d "$AKB_MKB_BUILD_DIR" ]]; then
+                    log "Cannot clean busybox: not downloaded or built" "warn"
+                    return 0
+                fi
+                log "Cleaning busybox does not restore the bootfs" "warn"
+                mkb::clean
+                return 0
+                ;;
+            
+            build)
+                ;;
+
+            *)
+                echo "USAGE: tools_bb {build/<none>|clean}"
+                return 1
+                ;;
+        esac
+    fi
+
+    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/bin/busybox" ]]; then
+        log "Busybox already exists in the bootfs, pass build explicitly to continue" "warn"
         return 0
     fi
 
-    _akb_import "/../akb_lib/makebuild.sh"
     download_src
 
     # toolchain is specified by the config

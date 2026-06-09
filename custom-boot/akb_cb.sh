@@ -127,17 +127,20 @@ case "${1:-}" in
         ;;
 
     clean_tools)
-        log "STUB: Not implemented" "warn"
+        log "Cleaning busybox"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh" "clean"
+        log "Cleaning rebooter"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "clean"
         ;;
 
     tools_bb)
         bfs::pre_build_action
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh" "${@:2}"
         ;;
 
     tools_rb)
         bfs::pre_build_action
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "${@:2}"
         ;;
 
     *)

@@ -63,9 +63,9 @@ function akb::init {
     fi
 }
 
-function akb::invoke_builder() {
+function akb::invoke_builder {
     if [[ $# -eq 0 || -z "$1" ]]; then
-        log "USAGE: akb::invoke_builder [path]" "error"
+        log "USAGE: akb::invoke_builder [path] [args?]" "error"
         return 1
     fi
     local builder_path=$(realpath "$1")
@@ -91,7 +91,7 @@ function akb::invoke_builder() {
             log "AKB builder has no main function: $builder_path" "error"
             exit 1
         fi
-        _sb_main
+        _sb_main "${@:2}"
     )
     popd >/dev/null
 }
