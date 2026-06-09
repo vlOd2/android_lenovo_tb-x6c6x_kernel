@@ -3,6 +3,7 @@ toolchain/
 
 tools/busybox/bbsrc/
 tools/busybox/*.bz2
-tools/e2fsprogs
+tools/e2fsprogs/src
+tools/e2fsprogs/*.gz
 
 alpine-rootfs.img

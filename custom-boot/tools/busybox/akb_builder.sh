@@ -14,10 +14,10 @@ function download_src {
         return 0
     fi
     log "Downloading $BUSYBOX_ARCHIVE"
-    wget "$BUSYBOX_ARCHIVE" -O"bbsrc.tar.bz2"
+    wget "$BUSYBOX_ARCHIVE" -O"busybox.tar.bz2"
     mkdir -p bbsrc
-    tar -C "bbsrc" --strip-components=1 -xvf "bbsrc.tar.bz2"
-    rm bbsrc.tar.bz2
+    tar -C "bbsrc" --strip-components=1 -xvf "busybox.tar.bz2"
+    rm "busybox.tar.bz2"
 }
 
 function mkb::extra_clean {

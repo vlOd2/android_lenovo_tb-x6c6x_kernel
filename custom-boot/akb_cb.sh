@@ -194,13 +194,18 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "${@:2}"
         ;;
 
+    tools_e2fs)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "${@:2}"
+        ;;
+
     *)
         echo "Usage: $0" $'...\n'
         echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n'
         echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
         echo $'Out:\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
-        echo $'Specific tools:\n\ttools_bb\n\ttools_rb\n\ttools_db'
+        echo $'Specific tools:\n\ttools_bb\n\ttools_rb\n\ttools_db\n\ttools_e2fs'
         exit 1
         ;;
 esac
