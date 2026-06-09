@@ -1,0 +1,98 @@
+#!/bin/sh
+
+mount -t devtmpfs devtmpfs /dev
+exec 1>/dev/kmsg
+exec 2>&1
+
+log() {
+    local level="$1"
+    shift
+    
+    case "$level" in
+        error)
+            printf "<1>[ERROR] %s\n" "$*"
+            ;;
+
+        warn)
+            printf "<1>[WARN] %s\n" "$*"
+            ;;
+
+        *)
+            printf "<1>[INFO] %s\n" "$*"
+            ;;
+    esac
+}
+
+map_block_partitions() {
+    mkdir -p /dev/block/by-name
+
+    for uevent in /sys/class/block/*/uevent; do
+        (
+            . "$uevent" 2>/dev/null
+            if [ -n "$PARTNAME" ] && [ -n "$DEVNAME" ]; then
+                ln -sf "/dev/$DEVNAME" "/dev/block/by-name/$PARTNAME"
+                mkdir -p /dev/block/bootdevice/by-name
+                ln -sf "/dev/$DEVNAME" "/dev/block/bootdevice/by-name/$PARTNAME"
+            fi
+        )
+    done
+}
+
+setup_usb_serial() {
+    mkdir -p /sys/kernel/config/usb_gadget/g1
+    cd /sys/kernel/config/usb_gadget/g1
+
+    echo "0x1d6b" > idVendor
+    echo "0x0104" > idProduct
+
+    mkdir -p strings/0x409
+    echo "1234567890" > strings/0x409/serialnumber
+    echo "Manufacturer" > strings/0x409/manufacturer
+    echo "Product" > strings/0x409/product
+
+    mkdir -p configs/c.1/strings/0x409
+    echo "CDC Serial" > configs/c.1/strings/0x409/configuration
+
+    mkdir -p functions/acm.usb0
+    ln -s functions/acm.usb0 configs/c.1/
+
+    echo "musb-hdrc" > UDC
+
+    cd -
+}
+
+log info "Mounting filesystems"
+mount -t proc proc /proc
+mount -t sysfs sys /sys
+mount -t configfs none /sys/kernel/config
+
+log info "Mapping block partitions"
+map_block_partitions
+ls /dev/block/by-name/
+
+log info "Setting up USB serial"
+setup_usb_serial
+
+log info "Mounting rootfs"
+mkdir -p /mnt/rootfs
+mount -t ext4 /dev/block/by-name/super /mnt/rootfs
+
+chvt 1
+
+#if [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
+if [ 1 -eq 0 ]; then
+    log info "Switching to Alpine"
+    umount /sys/kernel/config 2>/dev/null
+    umount /sys 2>/dev/null
+    umount /proc 2>/dev/null
+    exec switch_root /mnt/rootfs /sbin/init
+else
+    log error "Failed to mount rootfs"
+    log warn "Starting serial tty"
+    ./serialtty.sh &
+
+    while true; do
+        log info "System is alive: $(date +%s)"
+        sleep 2
+    done
+fi

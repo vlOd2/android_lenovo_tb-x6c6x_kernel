@@ -1,7 +1,2 @@
-/deploy/boot/
-/deploy/vendor/
-/deploy/base/
-/deploy/out/
-/custom-ramdisk/
 /kernel_tc/
 /kernel_build/

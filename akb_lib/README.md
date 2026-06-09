@@ -21,6 +21,8 @@ its usually loaded from an external script by bigger builders
 ## Builder (or pure builder)
 sub builder that can only be invoked by the root
 
+builders retain the root's _akb_import path
+
 > [!NOTE]
 > Builders typically also depend on root builder specific functions and variables, not just common AKB ones, and thus are not "pure"
 
