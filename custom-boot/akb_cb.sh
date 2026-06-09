@@ -16,8 +16,6 @@ _akb_import "/akb_cb_tc.sh"
 
 akb::init
 
-# https://musl.cc/aarch64-linux-musl-cross.tgz
-
 function bfs::pre_build_action {
     if [[ ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
         log "Out bootfs folder not found, run initfs first" "error"
@@ -36,26 +34,6 @@ function bfs::copyfs {
     fi
     mkdir -p "$AKB_CB_OUT_BOOFS_DIR"
     cp -a "$AKB_CB_BASE_BOOTFS_DIR/"* "$AKB_CB_OUT_BOOFS_DIR/"
-}
-
-function bfs::initfs {
-    if [[ -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
-        log "Out bootfs already exists, clean and try again, or use copyfs to recopy base" "error"
-        exit 1
-    fi
-    bfs::copyfs
-    pushd "$AKB_CB_OUT_BOOFS_DIR"
-    mkdir -p dev proc sys etc root mnt
-    popd
-}
-
-function bfs::copyimg {
-    if [[ ! -d "$AKB_CB_BASE_IMG_DIR" ]]; then
-        log "Base image not found: $AKB_CB_BASE_IMG_DIR" "error"
-        exit 1
-    fi
-    mkdir -p "$AKB_CB_OUT_IMG_DIR"
-    cp -a "$AKB_CB_BASE_IMG_DIR/"* "$AKB_CB_OUT_IMG_DIR/"
 }
 
 function bfs:___ {
@@ -86,19 +64,58 @@ function bfs:___ {
 }
 
 case "${1:-}" in
-    initfs)
-        bfs::initfs
-        log "Initialised out bootfs"
+    init_fs)
+        if [[ -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
+            log "Out bootfs already exists, clean and try again, or use copyfs to recopy base" "error"
+            exit 1
+        fi
+        bfs::copyfs
+        pushd "$AKB_CB_OUT_BOOFS_DIR" &>/dev/null
+        mkdir -p dev proc sys etc root mnt
+        popd &>/dev/null
+        log "Initialised bootfs"
         ;;
 
-    copyfs)
+    copy_fs)
         bfs::copyfs
         log "Copied base bootfs"
         ;;
 
-    copyimg)
-        bfs::copyimg
+    copy_img)
+        if [[ ! -d "$AKB_CB_BASE_IMG_DIR" ]]; then
+            log "Base image not found: $AKB_CB_BASE_IMG_DIR" "error"
+            exit 1
+        fi
+        mkdir -p "$AKB_CB_OUT_IMG_DIR"
+        cp -a "$AKB_CB_BASE_IMG_DIR/"* "$AKB_CB_OUT_IMG_DIR/"
         log "Copied base image"
+        ;;
+
+    clean_out)
+        if [[ ! -d "$AKB_CB_OUT_DIR" ]]; then
+            log "Out folder does not exist" "warn"
+            exit 1
+        fi
+
+        log "Out folder: $AKB_CB_OUT_DIR"
+        read -p "Delete the out folder? [y/N] " delete_prompt
+
+        case "$delete_prompt" in
+            [yY])
+                (
+                    set -x
+                    rm -rf "$AKB_CB_OUT_DIR"
+                )
+                ;;
+
+            *)
+                log "Clean cancelled" "warn"
+                ;;
+        esac
+        ;;
+
+    tc)
+        bfs::pre_build_action
         ;;
 
     all_tools)
@@ -107,6 +124,10 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
         log "Building rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
+        ;;
+
+    clean_tools)
+        log "STUB: Not implemented" "warn"
         ;;
 
     tools_bb)
@@ -119,15 +140,8 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
         ;;
 
-    clean_fs)
-        ;;
-
-    tc)
-        bfs::pre_build_action
-        ;;
-
     *)
-        echo "Usage: $0 {initfs|copyfs|copyimg|all_tools|tools_bb|tools_rb|tc}"
+        echo "Usage: $0 {init_fs|copy_fs|copy_img|clean_out|tc|all_tools|clean_tools|tools_bb|tools_rb}"
         exit 1
         ;;
 esac
