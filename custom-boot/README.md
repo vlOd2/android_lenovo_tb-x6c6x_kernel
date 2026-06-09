@@ -20,13 +20,15 @@ It's also probably not going to be appropriate for whatever use case you might h
     - **new_boot.img**: the final, ready to flash, built image
 
 # How to build
-AKB makes this pretty straightforward, the toolchain and source code for the tools will be automatically downloaded for you
+AKB makes this pretty straightforward, as the toolchain and tools source code will be automatically downloaded for you
 
 You only need to make sure you have **magiskboot** in your path and the appropriate dependencies (mostly the same as the kernel)
 
 You can get **magiskboot** by extracing the arch specific lib from the magisk apk and renaming it appropriately
 
-## Basic steps
+Run `akb_cb.sh` and you will get all available options (`cb` stands for custom boot btw)
+
+## Typical build flow
 ```bash
 ./akb_cb.sh init_fs
 ./akb_cb.sh tc # optional
