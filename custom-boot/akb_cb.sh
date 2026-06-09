@@ -36,31 +36,58 @@ function bfs::copyfs {
     cp -a "$AKB_CB_BASE_BOOTFS_DIR/"* "$AKB_CB_OUT_BOOFS_DIR/"
 }
 
-function bfs:___ {
-    KERNEL_IMAGE="$PWD/../akb_build/arch/arm64/boot/Image"
-    KERNEL_DTB="$PWD/../akb_build/arch/arm64/boot/dts/mediatek/mt6765.dtb"
+function bfs::build_img {
+    if ! command -v "magiskboot" >/dev/null 2>&1; then
+        log "magiskboot not found, make sure its in your PATH and try again" "error"
+        exit 1
+    fi
+    
+    if [[ ! -d "$AKB_CB_OUT_DIR" || ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
+        log "Out bootfs does not exist, run init_fs and all_tools then retry" "error"
+        exit 1
+    fi
 
-    rm ramdisk.cpio.gz || true
-    pushd bootfs
-    find . -print0 2>/dev/null | cpio --null -ov --format=newc 2>/dev/null | gzip -9 > ../ramdisk.cpio.gz 2>/dev/null
+    if [[ ! -d "$AKB_CB_OUT_IMG_DIR" || ! -f "$AKB_CB_OUT_IMG_DIR/original_boot.img" ]]; then
+        log "Out image does not exist, run copy_img then retry" "error"
+        exit 1
+    fi
+
+    local kernel_build_dir="$AKB_ROOT_DIR/../kernel_build"
+    local kernel_image="$kernel_build_dir/arch/arm64/boot/Image"
+    local kernel_dtb="$kernel_build_dir/arch/arm64/boot/dts/mediatek/mt6765.dtb"
+
+    if [[ ! -d "$kernel_build_dir" || ! -f "$kernel_image" || ! -f "$kernel_dtb" ]]; then
+        log "Kernel has not been built, cannot build image" "error"
+        exit 1
+    fi
+
+    log "Cleaning image dir"
+    rm "$AKB_CB_OUT_IMG_DIR/kernel" || true
+    rm "$AKB_CB_OUT_IMG_DIR/dtb" || true
+    rm "$AKB_CB_OUT_IMG_DIR/ramdisk.cpio" || true
+    rm "$AKB_CB_OUT_DIR/new_boot.img" || true
+
+    log "Copying kernel"
+    cp "$kernel_image" "$AKB_CB_OUT_IMG_DIR/kernel"
+    cp "$kernel_dtb" "$AKB_CB_OUT_IMG_DIR/dtb"
+
+    log "Creating ramdisk"
+    pushd "$AKB_CB_OUT_BOOFS_DIR"
+
+    find . -print0 2>/dev/null | \
+        cpio --null -ov --format=newc 2>/dev/null | \
+        gzip -9 > "$AKB_CB_OUT_IMG_DIR/ramdisk.cpio" 2>/dev/null
+    
     popd
 
-    pushd boot
+    log "Packing image"
+    pushd "$AKB_CB_OUT_IMG_DIR"
 
-    rm kernel || true
-    rm dtb || true
-    rm ramdisk.cpio || true
-    rm new_boot.img || true
-    cp "$KERNEL_IMAGE" kernel
-    cp "$KERNEL_DTB" dtb
-    mv ../ramdisk.cpio.gz ramdisk.cpio
-
-    magiskboot repack boot.img new_boot.img
+    magiskboot repack original_boot.img "$AKB_CB_OUT_DIR/new_boot.img"
 
     popd
 
-    fastboot flash boot ./boot/new_boot.img
-    fastboot reboot
+    log "Built image: $AKB_CB_OUT_DIR/new_boot.img"
 }
 
 case "${1:-}" in
@@ -89,6 +116,23 @@ case "${1:-}" in
         mkdir -p "$AKB_CB_OUT_IMG_DIR"
         cp -a "$AKB_CB_BASE_IMG_DIR/"* "$AKB_CB_OUT_IMG_DIR/"
         log "Copied base image"
+        ;;
+
+    build_img)
+        bfs::build_img
+        ;;
+
+    build_and_flash_img)
+        bfs::build_img
+
+        if [[ -z "$(fastboot devices)" ]]; then
+        	log "Cannot flash image: no device detected" "error"
+        	exit 1
+        fi
+        
+        log "Flashing image and rebooting"
+        fastboot flash boot "$AKB_CB_OUT_DIR/new_boot.img"
+        fastboot reboot
         ;;
 
     clean_out)
@@ -144,7 +188,12 @@ case "${1:-}" in
         ;;
 
     *)
-        echo "Usage: $0 {init_fs|copy_fs|copy_img|clean_out|tc|all_tools|clean_tools|tools_bb|tools_rb}"
+        echo "Usage: $0" $'...\n'
+        echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n'
+        echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
+        echo $'Out:\n\tclean_out\n'
+        echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
+        echo $'Specific tools:\n\ttools_bb\n\ttools_rb'
         exit 1
         ;;
 esac
