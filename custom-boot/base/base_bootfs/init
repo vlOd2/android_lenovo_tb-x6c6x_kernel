@@ -4,21 +4,28 @@ mount -t devtmpfs devtmpfs /dev
 exec 1>/dev/kmsg
 exec 2>&1
 
+clear > /dev/tty0
+chvt 1
+
 log() {
     local level="$1"
     shift
     
     case "$level" in
         error)
-            printf "<1>[ERROR] %s\n" "$*"
+            printf "<0>[ERROR] %s\n" "$*"
             ;;
 
         warn)
-            printf "<1>[WARN] %s\n" "$*"
+            printf "<0>[WARN] %s\n" "$*"
+            ;;
+
+        debug)
+            printf "<6>[INFO] %s\n" "$*"
             ;;
 
         *)
-            printf "<1>[INFO] %s\n" "$*"
+            printf "<0>[INFO] %s\n" "$*"
             ;;
     esac
 }
@@ -61,6 +68,10 @@ setup_usb_serial() {
     cd -
 }
 
+log info "============================"
+log info "      INIT STARTING UP      "
+log info "============================"
+
 log info "Mounting filesystems"
 mount -t proc proc /proc
 mount -t sysfs sys /sys
@@ -77,22 +88,34 @@ log info "Mounting rootfs"
 mkdir -p /mnt/rootfs
 mount -t ext4 /dev/block/by-name/super /mnt/rootfs
 
-chvt 1
-
-#if [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
+# if [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
 if [ 1 -eq 0 ]; then
-    log info "Switching to Alpine"
+    log info "=========================="
+    log info "      LOADING ROOTFS      "
+    log info "=========================="
+
+    log "Moving filesystems"
+    mount --move /dev /mnt/rootfs/dev
+    mount --move /proc /mnt/rootfs/proc
+    mount --move /sys /mnt/rootfs/sys
     umount /sys/kernel/config 2>/dev/null
-    umount /sys 2>/dev/null
-    umount /proc 2>/dev/null
+
+    log info "Switching root to rootfs"
     exec switch_root /mnt/rootfs /sbin/init
 else
     log error "Failed to mount rootfs"
     log warn "Starting serial tty"
     ./serialtty.sh &
 
+    log info "Starting shell on tty1"
+    (
+        while true; do
+            setsid sh -i </dev/tty1 >/dev/tty1 2>&1
+        done
+    ) &
+
     while true; do
-        log info "System is alive: $(date +%s)"
+        log debug "System is alive: $(date +%s)"
         sleep 2
     done
 fi

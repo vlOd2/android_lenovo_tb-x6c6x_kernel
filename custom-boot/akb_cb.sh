@@ -168,6 +168,8 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
         log "Building rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
+        log "Building debug"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "${@:2}"
         ;;
 
     clean_tools)
@@ -187,13 +189,18 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "${@:2}"
         ;;
 
+    tools_db)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "${@:2}"
+        ;;
+
     *)
         echo "Usage: $0" $'...\n'
         echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n'
         echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
         echo $'Out:\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
-        echo $'Specific tools:\n\ttools_bb\n\ttools_rb'
+        echo $'Specific tools:\n\ttools_bb\n\ttools_rb\n\ttools_db'
         exit 1
         ;;
 esac

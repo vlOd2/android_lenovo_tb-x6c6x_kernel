@@ -33,6 +33,7 @@
 /* #include <mach/irqs.h> */
 #include <linux/dma-mapping.h>
 #include <linux/compat.h>
+#include <linux/workqueue.h>
 #ifdef CONFIG_MTK_AEE_FEATURE
 #include "mt-plat/aee.h"
 #endif
@@ -158,6 +159,7 @@ unsigned int PanDispSettingApplied;
 unsigned int need_esd_check;
 unsigned int lcd_fps = 6000;
 wait_queue_head_t screen_update_wq;
+static struct fb_info *g_autoflush_info = NULL;
 char mtkfb_lcm_name[256] = { 0 };
 #if defined(CONFIG_MTK_DUAL_DISPLAY_SUPPORT) && \
 	(CONFIG_MTK_DUAL_DISPLAY_SUPPORT == 2)
@@ -185,7 +187,6 @@ static int _parse_tag_videolfb(void);
 #endif
 static void mtkfb_late_resume(void);
 static void mtkfb_early_suspend(void);
-
 
 void mtkfb_log_enable(int enable)
 {
@@ -629,6 +630,35 @@ static int mtkfb_pan_display_impl(struct fb_var_screeninfo *var,
 	return ret;
 }
 
+static void mtkfb_deferred_flush_work(struct work_struct *work)
+{
+    if (g_autoflush_info && g_autoflush_info->fbops && g_autoflush_info->fbops->fb_pan_display) {
+        g_autoflush_info->fbops->fb_pan_display(&g_autoflush_info->var, g_autoflush_info);
+    }
+}
+
+static DECLARE_WORK(mtk_autoflush_work, mtkfb_deferred_flush_work);
+
+static void mtkfb_hw_autoflush_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
+{
+    cfb_fillrect(info, rect);
+    g_autoflush_info = info;
+    schedule_work(&mtk_autoflush_work);
+}
+
+static void mtkfb_hw_autoflush_copyarea(struct fb_info *info, const struct fb_copyarea *area)
+{
+    cfb_copyarea(info, area);
+    g_autoflush_info = info;
+    schedule_work(&mtk_autoflush_work);
+}
+
+static void mtkfb_hw_autoflush_imageblit(struct fb_info *info, const struct fb_image *image)
+{
+    cfb_imageblit(info, image);
+    g_autoflush_info = info;
+    schedule_work(&mtk_autoflush_work);
+}
 
 /* Set fb_info.fix fields and also updates fbdev.
  * When calling this fb_info.var must be set up already.
@@ -670,9 +700,12 @@ static void set_fb_fix(struct mtkfb_device *fbdev)
 	fix->xpanstep = 0;
 	fix->ypanstep = 1;
 
-	fbops->fb_fillrect = cfb_fillrect;
-	fbops->fb_copyarea = cfb_copyarea;
-	fbops->fb_imageblit = cfb_imageblit;
+	// fbops->fb_fillrect = cfb_fillrect;
+	// fbops->fb_copyarea = cfb_copyarea;
+	// fbops->fb_imageblit = cfb_imageblit;
+    fbops->fb_fillrect = mtkfb_hw_autoflush_fillrect;
+    fbops->fb_copyarea = mtkfb_hw_autoflush_copyarea;
+    fbops->fb_imageblit = mtkfb_hw_autoflush_imageblit;
 }
 
 
@@ -1752,6 +1785,33 @@ static int mtkfb_pan_display_proxy(struct fb_var_screeninfo *var,
 	return mtkfb_pan_display_impl(var, info);
 }
 
+static int mtkfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
+                           u_int transp, struct fb_info *info)
+{
+    unsigned int bpp = info->var.bits_per_pixel;
+
+    if (regno >= 16)
+        return -EINVAL;
+
+    switch (bpp) {
+    case 16: /* RGB 565 */
+        ((u32 *)(info->pseudo_palette))[regno] =
+            ((red & 0xF800) | ((green & 0xFC00) >> 5) | ((blue & 0xF800) >> 11));
+        break;
+    case 32: /* ARGB8888 / XRGB8888 */
+        ((u32 *)(info->pseudo_palette))[regno] =
+            (0xFF000000) |
+            (((red >> 8) & 0xFF) << info->var.red.offset) |
+            (((green >> 8) & 0xFF) << info->var.green.offset) |
+            (((blue >> 8) & 0xFF) << info->var.blue.offset);
+        break;
+    default:
+        return -EINVAL;
+    }
+
+    return 0;
+}
+
 /* Callback table for the frame buffer framework. Some of these pointers
  * will be changed according to the current setting of fb_info->accel_flags.
  */
@@ -1759,10 +1819,14 @@ static struct fb_ops mtkfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_open = mtkfb_open,
 	.fb_release = mtkfb_release,
+    .fb_setcolreg = mtkfb_setcolreg,
 	.fb_pan_display = mtkfb_pan_display_proxy,
-	.fb_fillrect = cfb_fillrect,
-	.fb_copyarea = cfb_copyarea,
-	.fb_imageblit = cfb_imageblit,
+	// .fb_fillrect = cfb_fillrect,
+	// .fb_copyarea = cfb_copyarea,
+	// .fb_imageblit = cfb_imageblit,
+    .fb_fillrect = mtkfb_hw_autoflush_fillrect,
+    .fb_copyarea = mtkfb_hw_autoflush_copyarea,
+    .fb_imageblit = mtkfb_hw_autoflush_imageblit,
 	.fb_cursor = mtkfb_soft_cursor,
 	.fb_check_var = mtkfb_check_var,
 	.fb_set_par = mtkfb_set_par,

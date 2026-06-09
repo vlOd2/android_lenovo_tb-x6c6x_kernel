@@ -28,7 +28,7 @@ I **haven't tested** building a stock kernel, however you should be able to do s
 > [!NOTE]
 > The built in config command uses the same defconfig with additional ones added on top
 
-You will need to replace the kernel and dtb in a stock build image yourself, as currently there aren't any scripts just for that
+You will need to replace the kernel and dtb in a stock boot image yourself, as currently there aren't any scripts just for that
 
 - built kernel path: "kernel_build/arch/arm64/boot/Image"
 - built dtb path: "kernel_build/arch/arm64/boot/dts/mediatek/mt6765.dtb"
