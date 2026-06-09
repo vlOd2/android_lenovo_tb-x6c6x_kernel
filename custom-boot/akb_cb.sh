@@ -12,36 +12,21 @@ _akb_import() { alias _akb_import=83f785c0fd26401184c0854cb5091f82; source "$__A
 # ---------------------------------------------------------
 _akb_import "/../akb_lib/common.sh"
 _akb_import "/akb_cb_env.sh"
+_akb_import "/akb_cb_tc.sh"
 
 akb::init
 
-function tc::check {
-    if [[ -z "${AKB_CB_TC_DIR:-}" || ! -d "$AKB_CB_TC_DIR" ]]; then
-        log "AKB_CB_TC_DIR is not a valid directory" "error"
-        exit 1
-    fi
+# https://musl.cc/aarch64-linux-musl-cross.tgz
 
-    if [[ -z "${AKB_TC_CC:-}" ]]; then
-        log "AKB_TC_CC is not set" "error"
-        exit 1
-    fi
-
-    if [[ ! -x "$AKB_CB_TC_DIR/bin/$AKB_TC_CC" ]]; then
-        log "$AKB_TC_CC is missing or not executable" "error"
-        exit 1
-    fi
-}
-
-function tc::use {
-    tc::check
-    export PATH="$AKB_CB_TC_DIR/bin:$PATH"
-}
-
-function bfs::tool_build_check {
+function bfs::pre_build_action {
     if [[ ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
         log "Out bootfs folder not found, run initfs first" "error"
         exit 1
     fi
+
+    tc::check
+    cbtc::download
+    cbtc::version
 }
 
 function bfs::copyfs {
@@ -117,7 +102,7 @@ case "${1:-}" in
         ;;
 
     all_tools)
-        bfs::tool_build_check
+        bfs::pre_build_action
         log "Building busybox"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
         log "Building rebooter"
@@ -125,20 +110,24 @@ case "${1:-}" in
         ;;
 
     tools_bb)
-        bfs::tool_build_check
+        bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
         ;;
 
     tools_rb)
-        bfs::tool_build_check
+        bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
         ;;
 
     clean_fs)
         ;;
 
+    tc)
+        bfs::pre_build_action
+        ;;
+
     *)
-        echo "Usage: $0 {initfs|copyfs|copyimg|all_tools|tools_bb|tools_rb}"
+        echo "Usage: $0 {initfs|copyfs|copyimg|all_tools|tools_bb|tools_rb|tc}"
         exit 1
         ;;
 esac

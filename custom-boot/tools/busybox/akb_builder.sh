@@ -15,7 +15,7 @@ function download_src {
     fi
     log "Downloading $BUSYBOX_ARCHIVE"
     wget "$BUSYBOX_ARCHIVE" -O"bbsrc.tar.bz2"
-    mkdir bbsrc
+    mkdir -p bbsrc
     tar -C "bbsrc" --strip-components=1 -xvf "bbsrc.tar.bz2"
     rm bbsrc.tar.bz2
 }
@@ -34,6 +34,8 @@ function _sb_main {
 
     _akb_import "/../akb_lib/makebuild.sh"
     download_src
+
+    # toolchain is specified by the config
 
     if [[ ! -e "$AKB_MKB_BUILD_DIR/.config" ]]; then
         mkb::run "defconfig"

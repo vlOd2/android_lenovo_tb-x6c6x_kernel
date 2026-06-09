@@ -6,9 +6,9 @@ IFS=$'\n\t'
 
 AKB_ROOT_DIR="$(akb::find_root_dir "${BASH_SOURCE[0]}")"
 
-AKB_CB_TOOLS_DIR="$AKB_ROOT_DIR/tools"
-AKB_CB_TC_DIR="$AKB_CB_TOOLS_DIR/aarch64-linux-musl-cross"
 AKB_TC_CC="aarch64-linux-musl-gcc"
+AKB_CB_TC_DIR="$AKB_ROOT_DIR/toolchain"
+AKB_CB_TOOLS_DIR="$AKB_ROOT_DIR/tools"
 
 AKB_CB_BASE_DIR="$AKB_ROOT_DIR/base"
 AKB_CB_BASE_BOOTFS_DIR="$AKB_CB_BASE_DIR/base_bootfs"

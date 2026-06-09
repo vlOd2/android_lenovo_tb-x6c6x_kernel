@@ -1,6 +1,6 @@
 out/
+toolchain/
 
-tools/aarch64-linux-musl-cross/
 tools/busybox/bbsrc/
 tools/busybox/*.bz2
 
