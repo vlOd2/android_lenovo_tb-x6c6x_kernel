@@ -28,9 +28,11 @@
 #include <mtk_idle_fs/mtk_idle_sysfs.h>
 DEFINE_SPINLOCK(__spm_lock);
 
+#ifndef CONFIG_MTK_AEE_FEATURE
 void aee_sram_printk(const char *fmt, ...) {
     // stub for when AEE is disabled
 }
+#endif
 
 void __attribute__ ((weak)) mtk_idle_cond_check_init(void)
 {

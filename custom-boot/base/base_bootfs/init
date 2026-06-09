@@ -84,12 +84,18 @@ ls /dev/block/by-name/
 log info "Setting up USB serial"
 setup_usb_serial
 
+log info "Press volume up key in 2 seconds to enter recovery"
+ENTER_RECOVERY=0
+if timeout 2 head -c 1 /dev/input/event1 >/dev/null 2>&1; then
+    ENTER_RECOVERY=1
+    log info "Volume up pressed, will enter recovery mode"
+fi
+
 log info "Mounting rootfs"
 mkdir -p /mnt/rootfs
 mount -t ext4 /dev/block/by-name/super /mnt/rootfs
 
-# if [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
-if [ 1 -eq 0 ]; then
+if [ $ENTER_RECOVERY -eq 0 ] && [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="
     log info "      LOADING ROOTFS      "
     log info "=========================="
@@ -103,7 +109,13 @@ if [ 1 -eq 0 ]; then
     log info "Switching root to rootfs"
     exec switch_root /mnt/rootfs /sbin/init
 else
-    log error "Failed to mount rootfs"
+    if [ $ENTER_RECOVERY -eq 0 ]; then
+        log error "Failed to mount rootfs"
+    fi
+    log info "========================="
+    log info "      RECOVERY MODE      "
+    log info "========================="
+
     log warn "Starting serial tty"
     ./serialtty.sh &
 

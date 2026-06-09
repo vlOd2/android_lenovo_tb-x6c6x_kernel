@@ -45,11 +45,23 @@ function _sb_main {
                 return 0
                 ;;
             
+            config)
+                mkb::run "defconfig"
+                cp "./busybox.config" "$AKB_MKB_BUILD_DIR/.config"
+                mkb::run "oldconfig"
+                return 0
+                ;;
+
+            menuconfig)
+                mkb::run "menuconfig"
+                return 0
+                ;;
+
             build)
                 ;;
 
             *)
-                echo "USAGE: tools_bb {build/<none>|clean}"
+                echo "USAGE: tools_bb {build/<none>|clean|config|menuconfig}"
                 return 1
                 ;;
         esac
