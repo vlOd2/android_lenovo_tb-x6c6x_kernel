@@ -93,9 +93,9 @@ fi
 
 log info "Mounting rootfs"
 mkdir -p /mnt/rootfs
-mount -t ext4 /dev/block/by-name/super /mnt/rootfs
+mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
 
-if [ $ENTER_RECOVERY -eq 0 ] && [ $? -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
+if [ $? -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="
     log info "      LOADING ROOTFS      "
     log info "=========================="
