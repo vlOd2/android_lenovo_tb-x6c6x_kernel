@@ -78,7 +78,11 @@ mount -t configfs none /sys/kernel/config
 
 log info "Mapping block partitions"
 map_block_partitions
-ls /dev/block/by-name/
+ls /dev/block/by-name/ > /dev/tty1
+
+log info "Mapping super dynamic partitions"
+dmsetup create --concise "$(parse-android-dynparts /dev/block/by-name/super)" 
+ls -1 /dev/mapper/dynpart-* > /dev/tty1
 
 log info "Setting up USB serial"
 setup_usb_serial
