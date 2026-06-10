@@ -3,8 +3,11 @@ toolchain/
 
 tools/busybox/bbsrc/
 tools/busybox/*.bz2
+
 tools/e2fsprogs/src
 tools/e2fsprogs/*.gz
+
 tools/openssl/build
 tools/openssl/src
-tools/dmsetup/src
+
+tools/parse-android-dynparts/src

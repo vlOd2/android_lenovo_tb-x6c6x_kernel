@@ -38,19 +38,19 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_dmsetup {build/<none>|clean}"
+                echo "USAGE: tools_pad {build/<none>|clean}"
                 return 1
                 ;;
         esac
     fi
 
-    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/sbin/dmsetup" ]]; then
-        log "dmsetup already exists in the bootfs, pass build explicitly to continue" "warn"
+    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/sbin/parse-android-dynparts" ]]; then
+        log "PAD already exists in the bootfs, pass build explicitly to continue" "warn"
         return 0
     fi
 
     if [[ ! -d "$AKB_CB_TOOLS_DIR/openssl/build" ]]; then
-        log "You must first build OpenSSL before dmsetup" "error"
+        log "You must first build OpenSSL before PAD" "error"
         return 1
     fi
 
@@ -58,7 +58,7 @@ function _sb_main {
     tc::use
 
     if [[ ! -d "$AKB_MKB_SOURCE_DIR" ]]; then
-        log "Configuring dmsetup"
+        log "Configuring PAD"
         mkdir -p "$AKB_MKB_SOURCE_DIR"
         pushd "$AKB_MKB_SOURCE_DIR"
 
@@ -73,11 +73,11 @@ function _sb_main {
 
         popd
     else
-        log "Skipping dmsetup configuration: already configured" "warn"
+        log "Skipping PAD configuration: already configured" "warn"
     fi
 
     mkb::run "-j$(nproc)"
 
-    log "Copying built dmsetup"
-    cp "$AKB_MKB_BUILD_DIR/parse-android-dynparts" "$AKB_CB_OUT_BOOFS_DIR/sbin/dmsetup"
+    log "Copying built PAD"
+    cp "$AKB_MKB_BUILD_DIR/parse-android-dynparts" "$AKB_CB_OUT_BOOFS_DIR/sbin/parse-android-dynparts"
 }

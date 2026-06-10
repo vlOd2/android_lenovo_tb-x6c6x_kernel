@@ -172,8 +172,8 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh"
         log "Building OpenSSL"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh"
-        log "Building dmsetup"
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/dmsetup/akb_builder.sh"
+        log "Building PAD"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/parse-android-dynparts/akb_builder.sh"
         ;;
 
     clean_tools)
@@ -185,8 +185,8 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "clean"
         log "Cleaning OpenSSL"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh" "clean"
-        log "Cleaning dmsetup"
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/dmsetup/akb_builder.sh" "clean"
+        log "Cleaning PAD"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/parse-android-dynparts/akb_builder.sh" "clean"
         ;;
 
     tools_bbox)
@@ -209,9 +209,9 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh" "${@:2}"
         ;;
 
-    tools_dmsetup)
+    tools_pad)
         bfs::pre_build_action
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/dmsetup/akb_builder.sh" "${@:2}"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/parse-android-dynparts/akb_builder.sh" "${@:2}"
         ;;
 
     *)
@@ -220,7 +220,7 @@ case "${1:-}" in
         echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
         echo $'Out:\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
-        echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs\n\ttools_ossl\n\ttools_dmsetup'
+        echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs\n\ttools_ossl\n\ttools_pad'
         exit 1
         ;;
 esac
