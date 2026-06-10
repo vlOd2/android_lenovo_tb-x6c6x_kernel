@@ -64,7 +64,7 @@ function _sb_main {
             ../configure \
                 CC="$AKB_TC_CC" \
                 CFLAGS="-O2 -static --sysroot=$AKB_TC_SYSROOT_DIR" \
-                LDFLAGS="-static --sysroot=$AKB_TC_SYSROOT_DIR" \
+                LDFLAGS="-static -s --sysroot=$AKB_TC_SYSROOT_DIR" \
                 --host=aarch64-linux-musl \
                 --disable-nls \
                 --disable-elf-shlibs

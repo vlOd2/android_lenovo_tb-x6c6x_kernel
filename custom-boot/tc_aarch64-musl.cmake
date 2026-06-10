@@ -5,10 +5,10 @@ set(TOOLCHAIN_ROOT "${CMAKE_CURRENT_LIST_DIR}/toolchain")
 message( "Toolchain root: ${TOOLCHAIN_ROOT}" )
 
 set(CMAKE_C_COMPILER "${TOOLCHAIN_ROOT}/bin/aarch64-linux-musl-gcc")
-set(CMAKE_C_FLAGS "-static")
+set(CMAKE_C_FLAGS "-O2 -static")
 
 set(CMAKE_CXX_COMPILER "${TOOLCHAIN_ROOT}/bin/aarch64-linux-musl-g++")
-set(CMAKE_CXX_FLAGS "-static")
+set(CMAKE_CXX_FLAGS "-O2 -static")
     
 set(CMAKE_SYSROOT "${TOOLCHAIN_ROOT}/aarch64-linux-musl")
 set(CMAKE_FIND_ROOT_PATH "${TOOLCHAIN_ROOT}/aarch64-linux-musl")
@@ -18,4 +18,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+set(CMAKE_EXE_LINKER_FLAGS "-static -s")

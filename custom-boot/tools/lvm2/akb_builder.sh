@@ -20,12 +20,8 @@ function download_src {
     rm "lvm2.tar.gz"
 }
 
-# function mkb::extra_clean {
-#     mkb::run "clean"
-# }
-
 function _sb_main {
-AKB_MKB_SOURCE_DIR="$(realpath src)/build"
+    AKB_MKB_SOURCE_DIR="$(realpath src)/build"
     AKB_MKB_BUILD_DIR="$AKB_MKB_SOURCE_DIR"
     AKB_MKB_BUILD_ARGS=(
         "CC=$AKB_TC_CC"
@@ -50,10 +46,10 @@ AKB_MKB_SOURCE_DIR="$(realpath src)/build"
         esac
     fi
 
-    # if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/sbin/mkfs.ext4" ]]; then
-    #     log "LVM2 already exists in the bootfs, pass build explicitly to continue" "warn"
-    #     return 0
-    # fi
+    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/sbin/dmsetup" ]]; then
+        log "LVM2 already exists in the bootfs, pass build explicitly to continue" "warn"
+        return 0
+    fi
 
     download_src
     tc::use
@@ -67,18 +63,17 @@ AKB_MKB_SOURCE_DIR="$(realpath src)/build"
             set -x
             ../configure \
                 CC="$AKB_TC_CC" \
-                CFLAGS="-static --sysroot=$AKB_TC_SYSROOT_DIR" \
-                LDFLAGS="-static --sysroot=$AKB_TC_SYSROOT_DIR" \
+                CFLAGS="-O2 -static --sysroot=$AKB_TC_SYSROOT_DIR" \
+                LDFLAGS="-static -s --sysroot=$AKB_TC_SYSROOT_DIR" \
                 --host=aarch64-linux-musl \
                 --enable-static_link \
-                --disable-udev \
-                --disable-selinux \
-                --disable-readline \
-                --disable-aio \
-                --disable-bcache \
-                --disable-vdo \
+                --disable-shared \
+                --disable-dmeventd \
                 --disable-cmdlib \
-                --disable-dmeventd
+                --disable-udev_sync \
+                --disable-udev_rules \
+                --disable-selinux \
+                --disable-readline
         )
 
         popd
@@ -86,5 +81,9 @@ AKB_MKB_SOURCE_DIR="$(realpath src)/build"
         log "Skipping LVM2 configuration: already configured" "warn"
     fi
 
-    mkb::run "device-mapper" "-j$(nproc)"
+    mkb::run -C libdm device-mapper -j$(nproc)
+    mkb::run -C libdm/dm-tools dmsetup.static -j$(nproc)
+
+    log "Copying built LVM2"
+    cp "$AKB_MKB_BUILD_DIR/libdm/dm-tools/dmsetup.static" "$AKB_CB_OUT_BOOFS_DIR/sbin/dmsetup"
 }

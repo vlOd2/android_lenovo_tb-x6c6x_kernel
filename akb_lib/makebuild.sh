@@ -86,6 +86,7 @@ function mkb::run {
     local build_args_dump=$(printf '%s ' "${AKB_MKB_BUILD_ARGS[@]}")
     local make_action_dump=$(printf '%s ' "$@") 
     log "Make options: $build_args_dump"
+    log "Make directory: $AKB_MKB_SOURCE_DIR"
     log "Running make $make_action_dump"
 
     local start_time=$EPOCHSECONDS
