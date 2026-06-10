@@ -7,3 +7,4 @@ tools/e2fsprogs/src
 tools/e2fsprogs/*.gz
 tools/openssl/build
 tools/openssl/src
+tools/dmsetup/src

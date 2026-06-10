@@ -61,7 +61,7 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_bb {build/<none>|clean|config|menuconfig}"
+                echo "USAGE: tools_bbox {build/<none>|clean|config|menuconfig}"
                 return 1
                 ;;
         esac

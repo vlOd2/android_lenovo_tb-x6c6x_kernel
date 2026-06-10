@@ -26,7 +26,7 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_rb {build/<none>|clean}"
+                echo "USAGE: tools_rebooter {build/<none>|clean}"
                 return 1
                 ;;
         esac

@@ -45,7 +45,7 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_os {build/<none>|clean}"
+                echo "USAGE: tools_ossl {build/<none>|clean}"
                 return 1
                 ;;
         esac
