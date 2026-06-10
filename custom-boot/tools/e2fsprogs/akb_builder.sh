@@ -46,10 +46,10 @@ function _sb_main {
         esac
     fi
 
-    # if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/bin/busybox" ]]; then
-    #     log "e2fsprogs already exists in the bootfs, pass build explicitly to continue" "warn"
-    #     return 0
-    # fi
+    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/sbin/mkfs.ext4" ]]; then
+        log "e2fsprogs already exists in the bootfs, pass build explicitly to continue" "warn"
+        return 0
+    fi
 
     download_src
     tc::use
@@ -76,4 +76,13 @@ function _sb_main {
     fi
 
     mkb::run "-j$(nproc)"
+
+    log "Copying built e2fsprogs"
+    cp "$AKB_MKB_BUILD_DIR/misc/fsck" "$AKB_CB_OUT_BOOFS_DIR/sbin/fsck"
+    cp "$AKB_MKB_BUILD_DIR/misc/mke2fs" "$AKB_CB_OUT_BOOFS_DIR/sbin/mke2fs"
+    cp "$AKB_MKB_BUILD_DIR/misc/tune2fs" "$AKB_CB_OUT_BOOFS_DIR/sbin/tune2fs"
+    cp "$AKB_MKB_BUILD_DIR/misc/dumpe2fs" "$AKB_CB_OUT_BOOFS_DIR/sbin/dumpe2fs"
+    ln -sf fsck "$AKB_CB_OUT_BOOFS_DIR/sbin/fsck.ext4"
+    ln -sf mke2fs "$AKB_CB_OUT_BOOFS_DIR/sbin/mkfs.ext4"
+    ln -sf mke2fs "$AKB_CB_OUT_BOOFS_DIR/sbin/mkfs.ext3"
 }

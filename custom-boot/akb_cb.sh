@@ -169,7 +169,9 @@ case "${1:-}" in
         log "Building rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
         log "Building debug"
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "${@:2}"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh"
+        log "Building e2fsprogs"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh"
         ;;
 
     clean_tools)
@@ -177,6 +179,10 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh" "clean"
         log "Cleaning rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "clean"
+        log "Cleaning debug"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "clean"
+        log "Cleaning e2fsprogs"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "clean"
         ;;
 
     tools_bb)
