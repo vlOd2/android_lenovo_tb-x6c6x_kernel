@@ -63,11 +63,11 @@ function _sb_main {
             set -x
             ../configure \
                 CC="$AKB_TC_CC" \
+                CFLAGS="-O2 -static --sysroot=$AKB_TC_SYSROOT_DIR" \
+                LDFLAGS="-static --sysroot=$AKB_TC_SYSROOT_DIR" \
                 --host=aarch64-linux-musl \
                 --disable-nls \
-                --disable-elf-shlibs \
-                CFLAGS="-O2 -static" \
-                LDFLAGS="-static"
+                --disable-elf-shlibs
         )
 
         popd

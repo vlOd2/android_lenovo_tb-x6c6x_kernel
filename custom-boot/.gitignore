@@ -11,3 +11,6 @@ tools/openssl/build
 tools/openssl/src
 
 tools/parse-android-dynparts/src
+
+tools/lvm2/src
+tools/lvm2/*.gz
