@@ -64,7 +64,6 @@ setup_usb_serial() {
     ln -s functions/acm.usb0 configs/c.1/
 
     echo "musb-hdrc" > UDC
-
     cd -
 }
 

@@ -164,25 +164,25 @@ case "${1:-}" in
 
     all_tools)
         bfs::pre_build_action
-        log "Building busybox"
+        log "Building BusyBox"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
         log "Building rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
-        log "Building debug"
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh"
         log "Building e2fsprogs"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh"
+        log "Building OpenSSL"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh"
         ;;
 
     clean_tools)
-        log "Cleaning busybox"
+        log "Cleaning BusyBox"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh" "clean"
         log "Cleaning rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "clean"
-        log "Cleaning debug"
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "clean"
         log "Cleaning e2fsprogs"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "clean"
+        log "Cleaning OpenSSL"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh" "clean"
         ;;
 
     tools_bb)
@@ -195,14 +195,14 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "${@:2}"
         ;;
 
-    tools_db)
-        bfs::pre_build_action
-        akb::invoke_builder "$AKB_CB_TOOLS_DIR/debug/akb_builder.sh" "${@:2}"
-        ;;
-
     tools_e2fs)
         bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "${@:2}"
+        ;;
+
+    tools_os)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh" "${@:2}"
         ;;
 
     *)
@@ -211,7 +211,7 @@ case "${1:-}" in
         echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
         echo $'Out:\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
-        echo $'Specific tools:\n\ttools_bb\n\ttools_rb\n\ttools_db\n\ttools_e2fs'
+        echo $'Specific tools:\n\ttools_bb\n\ttools_rb\n\ttools_e2fs\n\ttools_os'
         exit 1
         ;;
 esac

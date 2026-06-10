@@ -37,10 +37,10 @@ function _sb_main {
         case "$1" in
             clean)
                 if [[ ! -d "$AKB_MKB_SOURCE_DIR" || ! -d "$AKB_MKB_BUILD_DIR" ]]; then
-                    log "Cannot clean busybox: not downloaded or built" "warn"
+                    log "Cannot clean BusyBox: not downloaded or built" "warn"
                     return 0
                 fi
-                log "Cleaning busybox does not restore the bootfs" "warn"
+                log "Cleaning BusyBox does not restore the bootfs" "warn"
                 mkb::clean
                 return 0
                 ;;
@@ -68,7 +68,7 @@ function _sb_main {
     fi
 
     if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/bin/busybox" ]]; then
-        log "Busybox already exists in the bootfs, pass build explicitly to continue" "warn"
+        log "BusyBox already exists in the bootfs, pass build explicitly to continue" "warn"
         return 0
     fi
 
@@ -81,7 +81,7 @@ function _sb_main {
         cp "./busybox.config" "$AKB_MKB_BUILD_DIR/.config"
         mkb::run "oldconfig"
     else
-        log "Skipping busybox configuration: already configured" "warn"
+        log "Skipping BusyBox configuration: already configured" "warn"
     fi
 
     mkb::run "-j$(nproc)"
