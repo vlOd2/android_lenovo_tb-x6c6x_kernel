@@ -98,6 +98,11 @@ log info "Mounting rootfs"
 mkdir -p /mnt/rootfs
 mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
 
+log info "Copying files"
+cp /lib/property_shim.so /mnt/rootfs/property_shim.so
+cp /lib/libnl.so /mnt/rootfs/libnl.so
+cp /mount_android.sh /mnt/rootfs/mount_android.sh
+
 if [ $? -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="
     log info "      LOADING ROOTFS      "
