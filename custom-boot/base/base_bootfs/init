@@ -97,18 +97,19 @@ fi
 log info "Mounting rootfs"
 mkdir -p /mnt/rootfs
 mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
+MOUNT_RESULT=$?
+log info "Mount exited with $MOUNT_RESULT"
 
-log info "Copying files"
-cp /lib/property_shim.so /mnt/rootfs/property_shim.so
-cp /lib/libnl.so /mnt/rootfs/libnl.so
-cp /mount_android.sh /mnt/rootfs/mount_android.sh
-
-if [ $? -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
+if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="
     log info "      LOADING ROOTFS      "
     log info "=========================="
 
-    log "Moving filesystems"
+    log info "Copying initfs files"
+    mkdir -p "/mnt/rootfs/wifi_init"
+    cp -f /wifi_init/* "/mnt/rootfs/wifi_init/"
+
+    log info "Moving filesystems"
     mount --move /dev /mnt/rootfs/dev
     mount --move /proc /mnt/rootfs/proc
     mount --move /sys /mnt/rootfs/sys
@@ -124,15 +125,8 @@ else
     log info "      RECOVERY MODE      "
     log info "========================="
 
-    log warn "Starting serial tty"
-    ./serialtty.sh &
-
-    log info "Starting shell on tty1"
-    (
-        while true; do
-            setsid sh -i </dev/tty1 >/dev/tty1 2>&1
-        done
-    ) &
+    log warn "Starting recovery tty"
+    ./recovery_tty &
 
     while true; do
         log debug "System is alive: $(date +%s)"

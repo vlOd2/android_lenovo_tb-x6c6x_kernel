@@ -8,16 +8,20 @@ if [[ -z "${__AKB_BUILDER:-}" ]]; then
 fi
 
 function _sb_main {
+    local out_dir="$AKB_CB_OUT_BOOFS_DIR/wifi_init"
+    local out_file="$out_dir/property_shim.so"
+
     if [[ $# -gt 0 ]]; then
         case "$1" in
             clean)
-                if [[ ! -e "$AKB_CB_OUT_BOOFS_DIR/lib/property_shim.so" ]]; then
+                if [[ ! -e "$out_file" ]]; then
                     log "property_shim cannot be cleaned: not built or bootfs not initialised" "warn"
                     return 0
                 fi
                 (
                     set -x
-                    rm "$AKB_CB_OUT_BOOFS_DIR/lib/property_shim.so"
+                    rm -rf "out"
+                    rm "$out_file"
                 )
                 return 0
                 ;;
@@ -26,22 +30,32 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_property_shim {build/<none>|clean}"
+                echo "USAGE: tools_props {build/<none>|clean}"
                 return 1
                 ;;
         esac
     fi
 
-    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/lib/property_shim.so" ]]; then
+    if [[ ($# -eq 0 || $1 != "build") && -e "$out_file" ]]; then
         log "property_shim is already built, pass build explicitly to continue" "warn"
         return 0
     fi
 
     tc::use
-    mkdir -p "$AKB_CB_OUT_BOOFS_DIR/lib"
+    mkdir -p "$out_dir"
+    mkdir -p out
+
+    for f in *.c; do
+        obj="${f%.c}.o"
+        (
+            set -x
+            # $AKB_TC_CC -DINCLUDE_DEBUG_HOOKS -c "$f" -o "out/$obj"
+            $AKB_TC_CC -c "$f" -o "out/$obj"
+        )
+    done
 
     (
         set -x
-        $AKB_TC_CC -shared -fPIC main.c -o "$AKB_CB_OUT_BOOFS_DIR/lib/property_shim.so"
+        $AKB_TC_CC -shared -fvisibility=hidden -fPIC out/* -o "$out_file"
     )
 }

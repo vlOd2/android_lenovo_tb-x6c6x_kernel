@@ -1,0 +1,52 @@
+#!/bin/sh
+
+exec 1>/dev/kmsg
+exec 2>&1
+
+log() {
+    local level="$1"
+    shift
+    
+    case "$level" in
+        error)
+            printf "<0>[ERROR] %s\n" "$*"
+            ;;
+
+        warn)
+            printf "<0>[WARN] %s\n" "$*"
+            ;;
+
+        debug)
+            printf "<6>[INFO] %s\n" "$*"
+            ;;
+
+        *)
+            printf "<0>[INFO] %s\n" "$*"
+            ;;
+    esac
+}
+
+(
+    log info "Serial tty: enter loop"
+
+    while true; do
+        if [ -e /dev/ttyGS0 ]; then
+            log debug "Serial tty: shell start"
+            /bin/sh -i </dev/ttyGS0 >/dev/ttyGS0 2>&1
+            log debug "Serial tty: shell end"
+        else
+            log debug "Serial tty: waiting for /dev/ttyGS0"
+            sleep 2
+        fi
+    done
+) &
+
+(
+    log info "FB tty: enter loop"
+
+    while true; do
+        log debug "FB tty: shell start"
+        setsid sh -i </dev/tty1 >/dev/tty1 2>&1
+        log debug "FB tty: shell end"
+    done
+) &

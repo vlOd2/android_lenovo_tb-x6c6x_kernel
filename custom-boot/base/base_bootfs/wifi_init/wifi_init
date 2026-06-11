@@ -1,0 +1,52 @@
+#!/bin/sh
+set -euo pipefail
+
+WIFI_IFACE=wlan0
+
+SYS_ROOT="/mnt/android_rootfs"
+VENDOR_DIR="$SYS_ROOT/vendor"
+ANDROID_DATA_DIR="$SYS_ROOT/data"
+ANDROID_MOUNT_DIR="$SYS_ROOT/mnt"
+
+echo "=== Mounting Android rootfs ==="
+mkdir -p "$SYS_ROOT"
+mount /dev/mapper/dynpart-system_a "$SYS_ROOT"
+mount /dev/mapper/dynpart-vendor_a "$VENDOR_DIR"
+mount -o bind /dev "$SYS_ROOT/dev"
+mount -o bind /proc "$SYS_ROOT/proc"
+mount -o bind /sys "$SYS_ROOT/sys"
+
+echo "=== Setting up /data ==="
+mount -t tmpfs tmpfs "$ANDROID_DATA_DIR"
+mkdir -p "$ANDROID_DATA_DIR/vendor/stp_dump"
+mkdir -p "$ANDROID_DATA_DIR/vendor/connsyslog"
+cp -f /wifi_init/property_shim.so "$ANDROID_DATA_DIR/"
+cp -f /wifi_init/libnl.so "$ANDROID_DATA_DIR/"
+cp -f /wifi_init/chroot_wifi_init "$ANDROID_DATA_DIR/wifi_init"
+
+echo "=== Setting up ART ==="
+mount -t tmpfs tmpfs "$SYS_ROOT/apex"
+mkdir -p "$SYS_ROOT/apex/com.android.runtime"
+rm -f "/tmp/apex_payload.img"
+unzip -q -d /tmp/ \
+    "$SYS_ROOT/system/apex/com.android.runtime.apex" \
+    apex_payload.img
+mount -o ro,loop "/tmp/apex_payload.img" "$SYS_ROOT/apex/com.android.runtime"
+
+echo "=== Mounting nvdata ==="
+mount -t tmpfs tmpfs "$ANDROID_MOUNT_DIR"
+mkdir -p "$ANDROID_MOUNT_DIR/vendor/nvdata"
+mount -o ro /dev/block/by-name/nvdata "$ANDROID_MOUNT_DIR/vendor/nvdata"
+
+echo "=== Initialising wifi interface ==="
+echo -n "$VENDOR_DIR/firmware/" > /sys/module/firmware_class/parameters/path
+chroot "$SYS_ROOT" /system/bin/sh /data/wifi_init
+
+echo "=== Waiting for wifi interface ($WIFI_IFACE) ==="
+for i in $(seq 1 10); do
+    if ip link show "$WIFI_IFACE" >/dev/null 2>&1; then
+        echo "-> Success: $WIFI_IFACE is now available"
+        break
+    fi
+    sleep 1
+done

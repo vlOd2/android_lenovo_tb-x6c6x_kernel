@@ -8,16 +8,19 @@ if [[ -z "${__AKB_BUILDER:-}" ]]; then
 fi
 
 function _sb_main {
+    local out_dir="$AKB_CB_OUT_BOOFS_DIR/wifi_init"
+    local out_file="$out_dir/libnl.so"
+
     if [[ $# -gt 0 ]]; then
         case "$1" in
             clean)
-                if [[ ! -e "$AKB_CB_OUT_BOOFS_DIR/lib/libnl.so" ]]; then
+                if [[ ! -e "$out_file" ]]; then
                     log "libnl_stub cannot be cleaned: not built or bootfs not initialised" "warn"
                     return 0
                 fi
                 (
                     set -x
-                    rm "$AKB_CB_OUT_BOOFS_DIR/lib/libnl.so"
+                    rm "$out_file"
                 )
                 return 0
                 ;;
@@ -26,22 +29,23 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_libnl_stub {build/<none>|clean}"
+                echo "USAGE: tools_lnl {build/<none>|clean}"
                 return 1
                 ;;
         esac
     fi
 
-    if [[ ($# -eq 0 || $1 != "build") && -e "$AKB_CB_OUT_BOOFS_DIR/lib/libnl.so" ]]; then
+    if [[ ($# -eq 0 || $1 != "build") && -e "$out_file" ]]; then
         log "libnl_stub is already built, pass build explicitly to continue" "warn"
         return 0
     fi
 
     tc::use
-    mkdir -p "$AKB_CB_OUT_BOOFS_DIR/lib"
+    mkdir -p "$out_dir"
 
     (
         set -x
-        $AKB_TC_CC -shared -fPIC main.c -o "$AKB_CB_OUT_BOOFS_DIR/lib/libnl.so"
+        # $AKB_TC_CC -shared -fPIC -DINCLUDE_LOGS main.c -o "$out_file"
+        $AKB_TC_CC -shared -fPIC main.c -o "$out_file"
     )
 }

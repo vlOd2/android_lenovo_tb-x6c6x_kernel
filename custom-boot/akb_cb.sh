@@ -164,41 +164,60 @@ case "${1:-}" in
 
     all_tools)
         bfs::pre_build_action
+
         log "Building BusyBox"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh"
+
         log "Building rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh"
+
         log "Building e2fsprogs"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh"
+
         log "Building OpenSSL"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh"
+
         log "Building PAD"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/parse-android-dynparts/akb_builder.sh"
+
         log "Building LVM2"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lvm2/akb_builder.sh"
+
         log "Building property_shim"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/property_shim/akb_builder.sh"
+
         log "Building libnl_stub"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh"
+
         ;;
 
     clean_tools)
+        bfs::pre_build_action
+        
         log "Cleaning BusyBox"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/busybox/akb_builder.sh" "clean"
+
         log "Cleaning rebooter"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/rebooter/akb_builder.sh" "clean"
+
         log "Cleaning e2fsprogs"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/e2fsprogs/akb_builder.sh" "clean"
+
         log "Cleaning OpenSSL"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/openssl/akb_builder.sh" "clean"
+
         log "Cleaning PAD"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/parse-android-dynparts/akb_builder.sh" "clean"
+
         log "Cleaning LVM2"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lvm2/akb_builder.sh" "clean"
+
         log "Cleaning property_shim"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/property_shim/akb_builder.sh" "clean"
+
         log "Cleaning libnl_stub"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh" "clean"
+
         ;;
 
     tools_bbox)
@@ -231,12 +250,12 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lvm2/akb_builder.sh" "${@:2}"
         ;;
 
-    tools_property_shim)
+    tools_props)
         bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/property_shim/akb_builder.sh" "${@:2}"
         ;;
 
-    tools_libnl_stub)
+    tools_lnl)
         bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh" "${@:2}"
         ;;
@@ -248,7 +267,8 @@ case "${1:-}" in
         echo $'Out:\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
         echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs' \
-            $'\n\ttools_ossl\n\ttools_pad\n\ttools_lvm\n\ttools_property_shim\n\ttools_libnl_stub'
+            $'\n\ttools_ossl\n\ttools_pad\n\ttools_lvm' \
+            $'\n\ttools_props\n\ttools_lnl'
         exit 1
         ;;
 esac
