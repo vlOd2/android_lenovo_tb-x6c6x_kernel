@@ -113,7 +113,7 @@ if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin
     mount --move /dev /mnt/rootfs/dev
     mount --move /proc /mnt/rootfs/proc
     mount --move /sys /mnt/rootfs/sys
-    umount /sys/kernel/config 2>/dev/null
+    umount /sys/kernel/config
 
     log info "Switching root to rootfs"
     exec switch_root /mnt/rootfs /sbin/init

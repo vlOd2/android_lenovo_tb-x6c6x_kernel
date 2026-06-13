@@ -1,9 +1,9 @@
 # Lenovo Tab K10 (TB-X6C6X) kernel
-Kernel source code for Lenovo Tab K10 (TB-X6C6X variant)
+Kernel source for Lenovo Tab K10 (TB-X6C6X variant), which contains additions and modifications, as I try to convert the device into a lightweight and secure server
 
-This source tree contains additions and modifications, as I try to convert the device into a lightweight server
+Some of these changes may possibly break the ability to boot Android, even with a stock config, as this scenario is outside the scope of this project and unsupported
 
-They are pretty minimal and shouldn't prevent a stock kernel from being built, but this scenario is outside the scope of this project (see below for more info)
+If you want the **original** open source package for this device (which includes the original **kernel source**), it's available under the `original` directory
 
 # Building
 A special building pipeline is used called AKB (see `akb_lib/README.MD` for more details)
@@ -23,7 +23,7 @@ Run `akb_kernel.sh` and you will get all available options
 
 ## Building stock kernel
 
-I **haven't tested** building a stock kernel, however you should be able to do something like this (configuring the build just with the device's stock config, `P98928AA1_defconfig`)
+I **haven't tested** building a stock kernel after all the changes I have done, however you should be able to do something like this (configuring the build just with the device's stock config, `P98928AA1_defconfig`)
 
 > [!NOTE]
 > The built in config command uses the same defconfig with additional ones added on top
