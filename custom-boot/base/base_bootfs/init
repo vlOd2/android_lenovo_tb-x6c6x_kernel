@@ -105,9 +105,12 @@ if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin
     log info "      LOADING ROOTFS      "
     log info "=========================="
 
+    log info "Extracting modules"
+    tar -xvzf "/modules.tar.gz" -C "/mnt/rootfs/"
+
     log info "Copying initfs files"
     mkdir -p "/mnt/rootfs/wifi_init"
-    cp -f /wifi_init/* "/mnt/rootfs/wifi_init/"
+    cp -f "/wifi_init/"* "/mnt/rootfs/wifi_init/"
 
     log info "Moving filesystems"
     mount --move /dev /mnt/rootfs/dev

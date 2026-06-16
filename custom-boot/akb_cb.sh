@@ -36,6 +36,39 @@ function bfs::copyfs {
     cp -a "$AKB_CB_BASE_BOOTFS_DIR/"* "$AKB_CB_OUT_BOOFS_DIR/"
 }
 
+function bfs::copymod {
+    if [[ ! -d "$AKB_CB_OUT_DIR" || ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
+        log "Out bootfs does not exist, run init_fs and all_tools then retry" "error"
+        exit 1
+    fi
+
+    local kernel_build_dir="$AKB_ROOT_DIR/../kernel_build"
+    local kernel_modules_dir="$kernel_build_dir/modules"
+
+    if [[ ! -d "$kernel_build_dir" || ! -d "$kernel_modules_dir" ]]; then
+        log "Kernel has not been built, cannot copy modules" "error"
+        exit 1
+    fi
+
+    pushd "$kernel_modules_dir" &>/dev/null
+
+    tar -czf "$AKB_CB_OUT_BOOFS_DIR/modules.tar.gz" \
+        --exclude="build" \
+        --exclude="source" \
+        *
+
+    popd &>/dev/null
+}
+
+function bfs::copyimg {
+    if [[ ! -d "$AKB_CB_BASE_IMG_DIR" ]]; then
+        log "Base image not found: $AKB_CB_BASE_IMG_DIR" "error"
+        exit 1
+    fi
+    mkdir -p "$AKB_CB_OUT_IMG_DIR"
+    cp -a "$AKB_CB_BASE_IMG_DIR/"* "$AKB_CB_OUT_IMG_DIR/"
+}
+
 function bfs::build_img {
     if ! command -v "magiskboot" >/dev/null 2>&1; then
         log "magiskboot not found, make sure its in your PATH and try again" "error"
@@ -43,7 +76,7 @@ function bfs::build_img {
     fi
     
     if [[ ! -d "$AKB_CB_OUT_DIR" || ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
-        log "Out bootfs does not exist, run init_fs and all_tools then retry" "error"
+        log "Out bootfs does not exist, run init_fs, copy_all and all_tools then retry" "error"
         exit 1
     fi
 
@@ -72,20 +105,20 @@ function bfs::build_img {
     cp "$kernel_dtb" "$AKB_CB_OUT_IMG_DIR/dtb"
 
     log "Creating ramdisk"
-    pushd "$AKB_CB_OUT_BOOFS_DIR"
+    pushd "$AKB_CB_OUT_BOOFS_DIR" &>/dev/null
 
     find . -print0 2>/dev/null | \
         cpio --null -ov --format=newc 2>/dev/null | \
         gzip -9 > "$AKB_CB_OUT_IMG_DIR/ramdisk.cpio" 2>/dev/null
     
-    popd
+    popd &>/dev/null
 
     log "Packing image"
-    pushd "$AKB_CB_OUT_IMG_DIR"
+    pushd "$AKB_CB_OUT_IMG_DIR" &>/dev/null
 
     magiskboot repack original_boot.img "$AKB_CB_OUT_DIR/new_boot.img"
 
-    popd
+    popd &>/dev/null
 
     log "Built image: $AKB_CB_OUT_DIR/new_boot.img"
 }
@@ -93,10 +126,10 @@ function bfs::build_img {
 case "${1:-}" in
     init_fs)
         if [[ -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
-            log "Out bootfs already exists, clean and try again, or use copyfs to recopy base" "error"
+            log "Out bootfs already exists, clean and try again" "error"
             exit 1
         fi
-        bfs::copyfs
+        mkdir -p "$AKB_CB_OUT_BOOFS_DIR"
         pushd "$AKB_CB_OUT_BOOFS_DIR" &>/dev/null
         mkdir -p dev proc sys etc root mnt
         popd &>/dev/null
@@ -108,13 +141,26 @@ case "${1:-}" in
         log "Copied base bootfs"
         ;;
 
+    copy_mod)
+        bfs::copymod
+        log "Copied modules"
+        ;;
+
     copy_img)
-        if [[ ! -d "$AKB_CB_BASE_IMG_DIR" ]]; then
-            log "Base image not found: $AKB_CB_BASE_IMG_DIR" "error"
+        bfs::copyimg
+        log "Copied base image"
+        ;;
+
+    copy_all)
+        if [[ ! -d "$AKB_CB_OUT_DIR" || ! -d "$AKB_CB_OUT_BOOFS_DIR" ]]; then
+            log "Out bootfs does not exist, run init_fs then retry" "error"
             exit 1
         fi
-        mkdir -p "$AKB_CB_OUT_IMG_DIR"
-        cp -a "$AKB_CB_BASE_IMG_DIR/"* "$AKB_CB_OUT_IMG_DIR/"
+        bfs::copyfs
+        log "Copied base bootfs"
+        bfs::copymod
+        log "Copied modules"
+        bfs::copyimg
         log "Copied base image"
         ;;
 
@@ -262,9 +308,9 @@ case "${1:-}" in
 
     *)
         echo "Usage: $0" $'...\n'
-        echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n'
+        echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n\tcopy_mod\n'
         echo $'Out image:\n\tcopy_img\n\tbuild_img\n\tbuild_and_flash_img\n'
-        echo $'Out:\n\tclean_out\n'
+        echo $'Out:\n\tcopy_all\n\tclean_out\n'
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
         echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs' \
             $'\n\ttools_ossl\n\ttools_pad\n\ttools_lvm' \

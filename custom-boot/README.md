@@ -32,7 +32,7 @@ Run `akb_cb.sh` and you will get all available options (`cb` stands for custom b
 ```bash
 ./akb_cb.sh init_fs
 ./akb_cb.sh tc # optional
+./akb_cb.sh copy_all
 ./akb_cb.sh all_tools
-./akb_cb.sh copy_img
 ./akb_cb.sh build_img # or build_and_flash_img
 ```
