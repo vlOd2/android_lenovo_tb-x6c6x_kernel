@@ -235,6 +235,9 @@ case "${1:-}" in
         log "Building libnl_stub"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh"
 
+        log "Building Lua"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh"
+
         ;;
 
     clean_tools)
@@ -263,6 +266,9 @@ case "${1:-}" in
 
         log "Cleaning libnl_stub"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh" "clean"
+
+        log "Cleaning Lua"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh" "clean"
 
         ;;
 
@@ -306,6 +312,11 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh" "${@:2}"
         ;;
 
+    tools_lua)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh" "${@:2}"
+        ;;
+
     *)
         echo "Usage: $0" $'...\n'
         echo $'Out bootfs:\n\tinit_fs\n\tcopy_fs\n\tcopy_mod\n'
@@ -314,7 +325,7 @@ case "${1:-}" in
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
         echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs' \
             $'\n\ttools_ossl\n\ttools_pad\n\ttools_lvm' \
-            $'\n\ttools_props\n\ttools_lnl'
+            $'\n\ttools_props\n\ttools_lnl\n\ttools_lua'
         exit 1
         ;;
 esac

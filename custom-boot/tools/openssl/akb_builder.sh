@@ -68,7 +68,7 @@ function _sb_main {
             no-shared \
             no-tests \
             no-apps \
-            --cross-compile-prefix=aarch64-linux-musl- \
+            --cross-compile-prefix="$AKB_TC_PREFIX-" \
             --prefix="$AKB_MKB_BUILD_DIR"
     )
 

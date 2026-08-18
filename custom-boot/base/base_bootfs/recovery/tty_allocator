@@ -32,7 +32,8 @@ log() {
     while true; do
         if [ -e /dev/ttyGS0 ]; then
             log debug "Serial tty: shell start"
-            /bin/sh -i </dev/ttyGS0 >/dev/ttyGS0 2>&1
+            # /bin/sh -i </dev/ttyGS0 >/dev/ttyGS0 2>&1
+            /sbin/getty -nil /recovery/serial_shell 9600 ttyGS0 vt100
             log debug "Serial tty: shell end"
         else
             log debug "Serial tty: waiting for /dev/ttyGS0"
@@ -46,7 +47,7 @@ log() {
 
     while true; do
         log debug "FB tty: shell start"
-        setsid sh -i </dev/tty1 >/dev/tty1 2>&1
+        /bin/sh -i </dev/tty1 >/dev/tty1 2>&1
         log debug "FB tty: shell end"
     done
 ) &

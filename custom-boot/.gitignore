@@ -15,4 +15,7 @@ tools/parse-android-dynparts/src
 tools/lvm2/src
 tools/lvm2/*.gz
 
+tools/lua/src
+tools/lua/*.gz
+
 tools/.vscode/

@@ -142,8 +142,8 @@ else
     log info "      RECOVERY MODE      "
     log info "========================="
 
-    log warn "Starting recovery tty"
-    ./recovery_tty &
+    log warn "Starting recovery tty allocator"
+    /recovery/tty_allocator &
 
     while true; do
         log debug "System is alive: $(date +%s)"
