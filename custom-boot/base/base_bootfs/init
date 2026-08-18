@@ -70,11 +70,23 @@ setup_usb_serial() {
 log info "============================"
 log info "      INIT STARTING UP      "
 log info "============================"
+log info "Current time: $(date)"
 
 log info "Mounting filesystems"
 mount -t proc proc /proc
 mount -t sysfs sys /sys
 mount -t configfs none /sys/kernel/config
+mount -t pstore pstore /sys/fs/pstore
+
+if [ -d /sys/fs/pstore ] && [ "$(ls -A /sys/fs/pstore 2>/dev/null)" ]; then
+    log info "Dumping last kernel panic from pstore"
+    cat /sys/fs/pstore/console-ramoops-* > /root/pstore_panic_console.log 2>/dev/null
+    cat /sys/fs/pstore/dmesg-ramoops-* > /root/pstore_panic_dmesg.log 2>/dev/null
+fi
+if [ -f /proc/pl_lk ]; then
+    log info "Signaling log_store we have booted"
+    echo 0 > /proc/pl_lk
+fi
 
 log info "Mapping block partitions"
 map_block_partitions
@@ -87,18 +99,19 @@ ls -1 /dev/mapper/dynpart-* > /dev/tty1
 log info "Setting up USB serial"
 setup_usb_serial
 
-log info "Press volume up key in 2 seconds to enter recovery"
-ENTER_RECOVERY=0
-if timeout 2 head -c 1 /dev/input/event1 >/dev/null 2>&1; then
-    ENTER_RECOVERY=1
-    log info "Volume up pressed, will enter recovery mode"
-fi
+# log info "Press volume up key in 3 seconds to enter recovery"
+ENTER_RECOVERY=1
+# if timeout 3 head -c 1 /dev/input/event1 >/dev/null 2>&1; then
+#     ENTER_RECOVERY=1
+#     log info "Volume up pressed, will enter recovery mode"
+# fi
 
-log info "Mounting rootfs"
-mkdir -p /mnt/rootfs
-mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
-MOUNT_RESULT=$?
-log info "Mount exited with $MOUNT_RESULT"
+# log info "Mounting rootfs"
+# mkdir -p /mnt/rootfs
+# mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
+# MOUNT_RESULT=$?
+# log info "Mount exited with $MOUNT_RESULT"
+MOUNT_RESULT=0
 
 if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="
@@ -117,6 +130,7 @@ if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin
     mount --move /proc /mnt/rootfs/proc
     mount --move /sys /mnt/rootfs/sys
     umount /sys/kernel/config
+    umount /sys/fs/pstore
 
     log info "Switching root to rootfs"
     exec switch_root /mnt/rootfs /sbin/init

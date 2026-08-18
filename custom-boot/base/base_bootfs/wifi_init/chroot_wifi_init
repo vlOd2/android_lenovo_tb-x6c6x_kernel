@@ -1,15 +1,15 @@
 #!/system/bin/sh
 set -euo pipefail
 
-echo "[chroot_wifi_init] Loading wmt module"
-insmod /vendor/lib/modules/wmt_drv.ko
+#echo "[chroot_wifi_init] Loading wmt module"
+#insmod /vendor/lib/modules/wmt_drv.ko
 
 echo "[chroot_wifi_init] Starting wmt loader"
 LD_PRELOAD=/data/property_shim.so /vendor/bin/wmt_loader
 
-echo "[chroot_wifi_init] Loading wlan modules"
-insmod /vendor/lib/modules/wmt_chrdev_wifi.ko
-insmod /vendor/lib/modules/wlan_drv_gen4m.ko
+#echo "[chroot_wifi_init] Loading wlan modules"
+#insmod /vendor/lib/modules/wmt_chrdev_wifi.ko
+#insmod /vendor/lib/modules/wlan_drv_gen4m.ko
 
 echo "[chroot_wifi_init] Starting wmt launcher"
 LD_PRELOAD=/data/property_shim.so /vendor/bin/wmt_launcher -p /vendor/firmware/ -o 1 &

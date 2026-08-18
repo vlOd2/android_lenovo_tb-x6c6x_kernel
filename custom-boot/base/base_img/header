@@ -1,4 +1,4 @@
 name=
-cmdline=bootopt=64S3,32N2,64N2 log_buf_len=4M printk.devkmsg=on earlycon=simplefb,0x7dce0000,1200,1920 console=tty1 consoleblank=0 fbcon=map:1 loglevel=3
+cmdline=bootopt=64S3,32N2,64N2 log_buf_len=4M printk.devkmsg=on earlycon=simplefb,0x7dce0000,1200,1920 console=tty1 consoleblank=0 fbcon=map:1 loglevel=6
 os_version=11.0.0
 os_patch_level=2022-03
