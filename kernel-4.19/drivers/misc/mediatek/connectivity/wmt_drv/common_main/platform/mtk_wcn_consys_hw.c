@@ -1421,16 +1421,6 @@ INT32 mtk_wcn_consys_cmd_rx_timeout_dump(VOID)
 
 INT32 mtk_wcn_consys_cmd_pre_rx_timeout_dump(VOID)
 {
-    if (wmt_consys_ic_ops == NULL)
-		wmt_consys_ic_ops = mtk_wcn_get_consys_ic_ops();
-    if (!wmt_consys_ic_ops) {
-        WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL in mtk_wcn_consys_cmd_pre_rx_timeout_dump");
-        WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL in mtk_wcn_consys_cmd_pre_rx_timeout_dump");
-        WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL in mtk_wcn_consys_cmd_pre_rx_timeout_dump");
-        WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL in mtk_wcn_consys_cmd_pre_rx_timeout_dump");
-        BUG();
-        return 0;
-    }
 	if (wmt_consys_ic_ops->consys_ic_cmd_pre_rx_timeout_dump)
 		return wmt_consys_ic_ops->consys_ic_cmd_pre_rx_timeout_dump();
 	return 0;
