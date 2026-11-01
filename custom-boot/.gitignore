@@ -19,3 +19,15 @@ tools/lua/src
 tools/lua/*.gz
 
 tools/.vscode/
+
+tools/libnl/src
+tools/libnl/*.gz
+tools/libnl/build.log
+
+tools/wpa_supplicant/src
+tools/wpa_supplicant/*.gz
+tools/wpa_supplicant/build.log
+
+tools/iw/src
+tools/iw/*.xz
+tools/iw/build.log

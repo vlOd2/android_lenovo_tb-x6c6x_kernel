@@ -238,6 +238,15 @@ case "${1:-}" in
         log "Building Lua"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh"
 
+        log "Building libnl"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl/akb_builder.sh"
+
+        log "Building wpa_supplicant"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/wpa_supplicant/akb_builder.sh"
+
+        log "Building iw"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/iw/akb_builder.sh"
+
         ;;
 
     clean_tools)
@@ -269,6 +278,15 @@ case "${1:-}" in
 
         log "Cleaning Lua"
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh" "clean"
+
+        log "Cleaning libnl"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl/akb_builder.sh" "clean"
+
+        log "Cleaning wpa_supplicant"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/wpa_supplicant/akb_builder.sh" "clean"
+
+        log "Cleaning iw"
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/iw/akb_builder.sh" "clean"
 
         ;;
 
@@ -307,7 +325,7 @@ case "${1:-}" in
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/property_shim/akb_builder.sh" "${@:2}"
         ;;
 
-    tools_lnl)
+    tools_lnls)
         bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl_stub/akb_builder.sh" "${@:2}"
         ;;
@@ -315,6 +333,21 @@ case "${1:-}" in
     tools_lua)
         bfs::pre_build_action
         akb::invoke_builder "$AKB_CB_TOOLS_DIR/lua/akb_builder.sh" "${@:2}"
+        ;;
+
+    tools_lnl)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/libnl/akb_builder.sh" "${@:2}"
+        ;;
+
+    tools_wpasup)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/wpa_supplicant/akb_builder.sh" "${@:2}"
+        ;;
+
+    tools_iw)
+        bfs::pre_build_action
+        akb::invoke_builder "$AKB_CB_TOOLS_DIR/iw/akb_builder.sh" "${@:2}"
         ;;
 
     *)
@@ -325,7 +358,8 @@ case "${1:-}" in
         echo $'All tools:\n\ttc\n\tall_tools\n\tclean_tools\n'
         echo $'Specific tools:\n\ttools_bbox\n\ttools_rebooter\n\ttools_e2fs' \
             $'\n\ttools_ossl\n\ttools_pad\n\ttools_lvm' \
-            $'\n\ttools_props\n\ttools_lnl\n\ttools_lua'
+            $'\n\ttools_props\n\ttools_lnls\n\ttools_lua' \
+            $'\n\ttools_lnl\n\ttools_wpasup\n\ttools_iw'
         exit 1
         ;;
 esac

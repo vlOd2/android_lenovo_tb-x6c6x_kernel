@@ -29,7 +29,7 @@ function _sb_main {
                 ;;
 
             *)
-                echo "USAGE: tools_lnl {build/<none>|clean}"
+                echo "USAGE: tools_lnls {build/<none>|clean}"
                 return 1
                 ;;
         esac
