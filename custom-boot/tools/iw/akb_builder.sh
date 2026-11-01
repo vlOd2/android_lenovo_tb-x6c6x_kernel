@@ -82,6 +82,10 @@ function _sb_main {
     tc::use
 
     mkb::run "-j$(nproc)" 
+    (
+        set -x
+        "$AKB_TC_PREFIX-strip" "$AKB_MKB_BUILD_DIR/iw"
+    )
 
     log "Copying built iw"
     cp "$AKB_MKB_BUILD_DIR/iw" "$AKB_CB_OUT_BOOFS_DIR/sbin/iw"

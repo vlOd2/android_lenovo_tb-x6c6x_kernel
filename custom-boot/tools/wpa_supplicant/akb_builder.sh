@@ -98,6 +98,13 @@ EOF
     
     mkb::run "-j$(nproc)" "wpa_supplicant" "wpa_passphrase" "wpa_cli" 
 
+    (
+        set -x
+        "$AKB_TC_PREFIX-strip" "$AKB_MKB_BUILD_DIR/wpa_supplicant"
+        "$AKB_TC_PREFIX-strip" "$AKB_MKB_BUILD_DIR/wpa_passphrase"
+        "$AKB_TC_PREFIX-strip" "$AKB_MKB_BUILD_DIR/wpa_cli"
+    )
+
     log "Copying built wpa_supplicant"
     cp "$AKB_MKB_BUILD_DIR/wpa_supplicant" "$AKB_CB_OUT_BOOFS_DIR/sbin/wpa_supplicant"
     log "Copying built wpa_passphrase"
