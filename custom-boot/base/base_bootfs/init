@@ -99,19 +99,18 @@ ls -1 /dev/mapper/dynpart-* > /dev/tty1
 log info "Setting up USB serial"
 setup_usb_serial
 
-# log info "Press volume up key in 3 seconds to enter recovery"
-ENTER_RECOVERY=1
-# if timeout 3 head -c 1 /dev/input/event1 >/dev/null 2>&1; then
-#     ENTER_RECOVERY=1
-#     log info "Volume up pressed, will enter recovery mode"
-# fi
+log info "Press volume up key in 3 seconds to enter recovery"
+ENTER_RECOVERY=0
+if timeout 3 head -c 1 /dev/input/event1 >/dev/null 2>&1; then
+    ENTER_RECOVERY=1
+    log info "Volume up pressed, will enter recovery mode"
+fi
 
-# log info "Mounting rootfs"
-# mkdir -p /mnt/rootfs
-# mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
-# MOUNT_RESULT=$?
-# log info "Mount exited with $MOUNT_RESULT"
-MOUNT_RESULT=0
+log info "Mounting rootfs"
+mkdir -p /mnt/rootfs
+mount -t ext4 /dev/block/by-name/userdata /mnt/rootfs
+MOUNT_RESULT=$?
+log info "Mount exited with $MOUNT_RESULT"
 
 if [ $MOUNT_RESULT -eq 0 ] && [ $ENTER_RECOVERY -eq 0 ] && [ -x /mnt/rootfs/sbin/init ]; then
     log info "=========================="

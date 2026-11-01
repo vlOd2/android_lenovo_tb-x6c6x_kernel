@@ -37,6 +37,15 @@ int do_connectivity_driver_init(int chip_id)
 		return 0;
 	init_before = 1;
 
+	/* Built-in mode: no platform device is probed until CONNSYS hw init
+	 * runs, so initialize it here instead of relying on the loader ioctl.
+	 */
+	tmp_ret = wmt_plat_consys_hw_init();
+	if (tmp_ret) {
+		WMT_DETECT_PR_ERR("consys hw init failed, ret:%d\n abort!\n", tmp_ret);
+		return tmp_ret;
+	}
+
 	tmp_ret = do_common_drv_init(chip_id);
 	i_ret += tmp_ret;
 	if (tmp_ret) {

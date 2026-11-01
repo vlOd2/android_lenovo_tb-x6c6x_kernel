@@ -515,6 +515,13 @@ static INT32 mtk_wmt_probe(struct platform_device *pdev)
 
 static INT32 mtk_wmt_remove(struct platform_device *pdev)
 {
+	if (!wmt_consys_ic_ops) {
+		WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL\n");
+		g_pdev = NULL;
+		atomic_set(&g_probe_called, 0);
+		return 0;
+	}
+
 	if (wmt_consys_ic_ops->consys_ic_need_store_pdev) {
 		if (wmt_consys_ic_ops->consys_ic_need_store_pdev() == MTK_WCN_BOOL_TRUE)
 			pm_runtime_disable(&pdev->dev);
@@ -1083,15 +1090,33 @@ INT32 mtk_wcn_consys_hw_init(VOID)
 {
 	INT32 iRet = -1, retry = 0;
 
+	if (atomic_read(&g_probe_called) != 0) {
+		WMT_PLAT_PR_INFO("WMT platform already initialized\n");
+		return 0;
+	}
+
 	iRet = platform_driver_register(&mtk_wmt_dev_drv);
-	if (iRet)
+	if (iRet) {
 		WMT_PLAT_PR_ERR("WMT platform driver registered failed(%d)\n", iRet);
-	else {
-		while (atomic_read(&g_probe_called) == 0) {
-			osal_sleep_ms(50);
-			retry++;
+		return iRet;
+	}
+
+	while (atomic_read(&g_probe_called) == 0 && retry < 100) {
+		osal_sleep_ms(50);
+		retry++;
+		if ((retry % 20) == 0)
 			WMT_PLAT_PR_INFO("g_probe_called = 0, retry = %d\n", retry);
-		}
+	}
+
+	if (atomic_read(&g_probe_called) == 0) {
+		WMT_PLAT_PR_ERR("WMT platform driver probe timeout\n");
+		platform_driver_unregister(&mtk_wmt_dev_drv);
+		return -1;
+	}
+
+	if (!wmt_consys_ic_ops) {
+		WMT_PLAT_PR_ERR("wmt_consys_ic_ops is NULL after probe\n");
+		return -1;
 	}
 
 	if (wmt_consys_ic_ops->consys_ic_pmic_register_device) {
@@ -1122,7 +1147,7 @@ INT32 mtk_wcn_consys_hw_init(VOID)
 INT32 mtk_wcn_consys_hw_deinit(VOID)
 {
 
-	if (pEmibaseaddr) {
+	if (wmt_consys_ic_ops && pEmibaseaddr) {
 		if (wmt_consys_ic_ops->consys_ic_emi_coredump_remapping)
 			wmt_consys_ic_ops->consys_ic_emi_coredump_remapping(&pEmibaseaddr, 0);
 	}
