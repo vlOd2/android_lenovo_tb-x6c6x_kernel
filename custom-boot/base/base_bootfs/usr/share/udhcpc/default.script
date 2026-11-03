@@ -1,0 +1,57 @@
+#!/bin/sh
+
+RESOLV_CONF="/etc/resolv.conf"
+
+[ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+
+case "$1" in
+    deconfig)
+        echo "Deconfiguring $interface..."
+        ifconfig $interface 0.0.0.0
+        ;;
+
+    bound|renew)
+        echo "Assigning IP $ip to $interface..."
+        
+        NETMASK=""
+        [ -n "$subnet" ] && NETMASK="netmask $subnet"
+        
+        BROADCAST=""
+        [ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+        
+        ifconfig $interface $ip $NETMASK $BROADCAST
+        
+        if [ -n "$router" ]; then
+            echo "Clearing old default routes..."
+            while route del default gw 0.0.0.0 dev $interface 2>/dev/null; do
+                :
+            done
+            
+            for i in $router; do
+                echo "Adding default gateway: $i"
+                route add default gw $i dev $interface
+            done
+        fi
+        
+        if [ -n "$dns" ]; then
+            echo "Updating $RESOLV_CONF..."
+            echo -n > "$RESOLV_CONF-$$"
+            [ -n "$domain" ] && echo "search $domain" >> "$RESOLV_CONF-$$"
+            for i in $dns; do
+                echo "nameserver $i" >> "$RESOLV_CONF-$$"
+            done
+            mv "$RESOLV_CONF-$$" "$RESOLV_CONF"
+        fi
+        ;;
+        
+    nak|leasefail)
+        echo "DHCP failed: $message"
+        ;;
+        
+    *)
+        echo "Unknown udhcpc command: $1"
+        exit 1
+        ;;
+esac
+
+exit 0
